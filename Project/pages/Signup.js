@@ -1,70 +1,108 @@
-import { StatusBar } from 'expo-status-bar';
-import React,{Component} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaView,StyleSheet, Text, View, Image, TextInput,Button,KeyboardAvoidingView  } from 'react-native';
-import { render } from 'react-dom';
+import React from 'react';
+import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-class Signup extends Component{
-    render() {
-        return (
-        <KeyboardAvoidingView style={styles.container} behavior="padding">
-            <SafeAreaView  style={styles.container}>
-                <Image source={require('./assets/logo.png')} style={styles.logo} /> 
-                <Text style={styles.title} >Bil-Events</Text>
-                <TextInput style={styles.idPass} placeholder={'ID'} />
-                <TextInput style={styles.idPass} placeholder={'name'} />
-                <TextInput style={styles.idPass} placeholder={'surname'} />
-                <TextInput style={styles.idPass} placeholder={'Password'} secureTextEntry={true}/>
-            </SafeAreaView >
-
-            <SafeAreaView  style={styles.container2}>
-                <Button title = "   Save   " style={styles.button} onPress = {() =>console.log("login tabbed")}/>
-            </SafeAreaView>        
-        </KeyboardAvoidingView>
-        );
-    }
+export default class App extends React.Component {
+  state={
+    email:"",
+    password:""
+  }
+  render(){
+    return (
+      <View style={styles.container}>
+        <View  style={styles.logo} >
+          <Image source={require('./assets/logo.png')} style={styles.logo} />
+        </View>  
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="ID number" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({email:text})}/>
+        </View>
+        <View style={styles.inputView} >
+          <TextInput  
+            secureTextEntry
+            style={styles.inputText}
+            placeholder="Name" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({password:text})}/>
+        </View>
+        <View style={styles.inputView} >
+          <TextInput  
+            secureTextEntry
+            style={styles.inputText}
+            placeholder="Surname" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({password:text})}/>
+        </View>
+        <View style={styles.inputView} >
+          <TextInput  
+            secureTextEntry
+            style={styles.inputText}
+            placeholder="Password" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({password:text})}/>
+        </View>
+        <TouchableOpacity>
+          <Text style={styles.forgot}>Forgot Password?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Login')}>
+          <Text style={styles.loginText}>REGISTER</Text>
+        </TouchableOpacity>
+  
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  container2: {
-    flex: 0.28,
-    width: 250,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'baseline',
-    
-  },
+  
   logo: {
     width: 300,
     height: 300,
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-    marginTop: 20,
-  },
-  idPass:{
-    color:'white',
-    width: 230,
-    height: 40,
-    backgroundColor: '#737373',
-    marginTop: 15,
-  },
-  button: {
-    width: 80,
-   
   },
   
+  inputView:{
+    width:"80%",
+    backgroundColor:"#465881",
+    borderRadius:25,
+    height:50,
+    marginBottom:20,
+    justifyContent:"center",
+    padding:20
+  },
+  inputText:{
+    height:50,
+    color:"white"
+  },
+  forgot:{
+    color:"black",
+    fontSize:11
+  },
+  loginBtn:{
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
+  },
+  signupBtn:{
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
+  }
 });
-
-export default Signup;

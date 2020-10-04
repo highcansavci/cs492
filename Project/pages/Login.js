@@ -1,26 +1,44 @@
-import { StatusBar } from 'expo-status-bar';
-import React,{Component} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaView,StyleSheet, Text, View, Image, TextInput,Button,KeyboardAvoidingView,  } from 'react-native';
-import { render } from 'react-dom';
+import React from 'react';
+import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-class Login extends Component{
-  render() {
-    return (      
-      <SafeAreaView style={styles.container} >
-        <SafeAreaView  style={styles.container} > 
-          <Image source={require('./assets/logo.png')} style={styles.logo} /> 
-          <Text style={styles.title} >Bil-Events</Text>
-          <TextInput style={styles.idPass} placeholder={'ID'} />
-          <TextInput style={styles.idPass} placeholder={'Password'} secureTextEntry={true}/>
-        </SafeAreaView >
+export default class App extends React.Component {
+  state={
+    email:"",
+    password:""
+  }
+  render(){
+    return (
+      <View style={styles.container}>
+        <View  style={styles.logo} >
+          <Image source={require('./assets/logo.png')} style={styles.logo} />
+        </View>  
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="ID number" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({email:text})}/>
+        </View>
+        <View style={styles.inputView} >
+          <TextInput  
+            secureTextEntry
+            style={styles.inputText}
+            placeholder="Password" 
+            placeholderTextColor="white"
+            onChangeText={text => this.setState({password:text})}/>
+        </View>
+        <TouchableOpacity>
+          <Text style={styles.forgot}>Forgot Password?</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.loginBtn}>
+          <Text style={styles.loginText}>LOGIN</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Signup')}>
+          <Text style={styles.loginText} >SIGNUP</Text>
+        </TouchableOpacity>
 
-        <SafeAreaView  style={styles.container2} >
-          <Button title = "   Login   " style={styles.button} onPress = {() =>console.log("login tabbed")}/>
-          <Button title = "   Signup  " style={styles.button} onPress = {() =>this.props.navigation.navigate('Signup')}/>
-        </SafeAreaView>
-      </SafeAreaView>
+  
+      </View>
     );
   }
 }
@@ -28,42 +46,51 @@ class Login extends Component{
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  container2: {
-    flex: 1,
-    width: 250,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'baseline',
-    
-  },
+  
   logo: {
     width: 300,
     height: 300,
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 40,
-    fontWeight: "bold",
-    marginTop: 20,
-  },
-  idPass:{
-    color:'white',
-    width: 230,
-    height: 40,
-    backgroundColor: '#737373',
-    marginTop: 15,
-  },
-  button: {
-    width: 80,
-   
   },
   
+  inputView:{
+    width:"80%",
+    backgroundColor:"#465881",
+    borderRadius:25,
+    height:50,
+    marginBottom:20,
+    justifyContent:"center",
+    padding:20
+  },
+  inputText:{
+    height:50,
+    color:"white"
+  },
+  forgot:{
+    color:"black",
+    fontSize:11
+  },
+  loginBtn:{
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
+  },
+  signupBtn:{
+    width:"80%",
+    backgroundColor:"#fb5b5a",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
+  }
 });
-
-export default Login;
