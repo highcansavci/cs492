@@ -50,23 +50,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  
+
   logo: {
     width: 300,
     height: 300,
   },
-  
+
   inputView:{
-    width:"80%",
+    width:"50%",
     backgroundColor:"#465881",
     borderRadius:25,
-    height:50,
-    marginBottom:20,
+    height:40,
+    marginBottom:10,
     justifyContent:"center",
-    padding:20
+    padding:10
   },
   inputText:{
-    height:50,
+    height:40,
     color:"white"
   },
   forgot:{
@@ -74,23 +74,23 @@ const styles = StyleSheet.create({
     fontSize:11
   },
   loginBtn:{
-    width:"80%",
+    width:"50%",
     backgroundColor:"#fb5b5a",
     borderRadius:25,
-    height:50,
+    height:40,
     alignItems:"center",
     justifyContent:"center",
-    marginTop:40,
+    marginTop:10,
     marginBottom:10
   },
   signupBtn:{
-    width:"80%",
+    width:"50%",
     backgroundColor:"#fb5b5a",
     borderRadius:25,
-    height:50,
+    height:40,
     alignItems:"center",
     justifyContent:"center",
-    marginTop:40,
+    marginTop:10,
     marginBottom:10
   }
 });
