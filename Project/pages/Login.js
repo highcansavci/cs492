@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 
+const { width, height } = Dimensions.get('window');
 export default class App extends React.Component {
   state={
     email:"",
@@ -52,16 +53,16 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: 300,
-    height: 300,
+    width: width * 0.7,
+    height: height * 0.5,
   },
 
   inputView:{
     width:"50%",
     backgroundColor:"#465881",
     borderRadius:25,
-    height:40,
-    marginBottom:10,
+    height:'6%',
+    marginBottom:'2.5%',
     justifyContent:"center",
     padding:10
   },
@@ -77,20 +78,20 @@ const styles = StyleSheet.create({
     width:"50%",
     backgroundColor:"#fb5b5a",
     borderRadius:25,
-    height:40,
+    height:'7%',
     alignItems:"center",
     justifyContent:"center",
-    marginTop:10,
-    marginBottom:10
+    marginTop:'2.5%',
+    marginBottom:'2.5%',
   },
   signupBtn:{
     width:"50%",
     backgroundColor:"#fb5b5a",
     borderRadius:25,
-    height:40,
+    height:'7%',
     alignItems:"center",
     justifyContent:"center",
-    marginTop:10,
-    marginBottom:10
+    marginTop:'2.5%',
+    marginBottom:'2.5%',
   }
 });
