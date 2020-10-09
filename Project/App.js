@@ -4,11 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import Login from './pages/Login';
 import Signup from './pages/Signup';
-
+import Homepage from './pages/Homepage';
 const Stack = createStackNavigator();
 
 function NavStack() {
   return (
+    
      <Stack.Navigator
         initialRouteName="Login"
         screenOptions={{
@@ -31,6 +32,11 @@ function NavStack() {
         name="Signup" 
         component={Signup} 
         options={{ title: 'Signup' }}
+      />
+       <Stack.Screen 
+        name="Homepage" 
+        component={Homepage} 
+        options={{ title: 'Upcoming Events' }}
       />
     </Stack.Navigator>
   );
