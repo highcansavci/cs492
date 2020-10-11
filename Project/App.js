@@ -5,6 +5,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Homepage from './pages/Homepage';
+import SelectedEvents from './pages/SelectedEvents';
+import RecommendedEvents from './pages/RecommendedEvents';
+
 const Stack = createStackNavigator();
 
 function NavStack() {
@@ -37,6 +40,16 @@ function NavStack() {
         name="Homepage" 
         component={Homepage} 
         options={{ title: 'Upcoming Events' }}
+      />
+      <Stack.Screen 
+        name="SelectedEvents" 
+        component={SelectedEvents} 
+        options={{ title: 'Selected Events' }}
+      />
+      <Stack.Screen 
+        name="RecommendedEvents" 
+        component={RecommendedEvents} 
+        options={{ title: 'Recommended Events' }}
       />
     </Stack.Navigator>
   );

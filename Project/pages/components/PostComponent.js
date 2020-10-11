@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,1)",
     fontSize: 19,
     width: 209,
-    height: 24
+    height: "100%"
   },
   loremIpsum5: {
     top: 12,
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
     marginTop: 7
   },
   icon2: {
-    color: "rgba(255,255,255,1)",
+    color: "grey",
     fontSize: 27,
     marginLeft: 16,
     marginTop: 7

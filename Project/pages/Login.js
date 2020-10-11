@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
-export default class App extends React.Component {
+
+export default class Login extends React.Component {
   state={
     email:"",
     password:""

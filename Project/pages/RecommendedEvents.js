@@ -7,7 +7,7 @@ import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 
-function Homepage(props) {
+function RecommendedEvents(props) {
   return (
     <View style={styles.container}>
       <StatusBar
@@ -161,4 +161,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Homepage;
+export default RecommendedEvents;
