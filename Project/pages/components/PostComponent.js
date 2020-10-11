@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/Entypo";
+import { StyleSheet, View, Image, Text,TouchableHighlight } from "react-native";
+import EntypoIcon from "react-native-vector-icons/Entypo";
+import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
 
 function PostComponent(props) {
   return (
@@ -21,7 +22,6 @@ function PostComponent(props) {
             <Text style={styles.loremIpsum4}>• 14h</Text>
           </View>
         </View>
-        <Icon name="dots-three-vertical" style={styles.icon}></Icon>
       </View>
       <View style={styles.eventStack}>
         <Text style={styles.event}></Text>
@@ -31,12 +31,22 @@ function PostComponent(props) {
       <Text style={styles.place}>Place :</Text>
       <Text style={styles.capacity}>Capacity :</Text>
       <Text style={styles.ge250251Points}>GE 250/251 Points :</Text>
-      <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.button}></TouchableOpacity>
-        <Text style={styles.loremIpsum6}>3.5 k</Text>
-        <TouchableOpacity style={styles.button2}></TouchableOpacity>
-        <Text style={styles.text}>3.5 k</Text>
-        <TouchableOpacity style={styles.button3}></TouchableOpacity>
+      <View style={styles.iconRow}>
+        <TouchableHighlight onPress={()=>console.log("Join")}>
+            <View>
+              <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
+            </View>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={()=>console.log("Leave")}>
+          <View>
+            <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
+          </View>
+        </TouchableHighlight>
+        <TouchableHighlight onPress={()=>console.log("Share")}>
+          <View>
+            <EvilIconsIcon name="share-google" style={styles.icon3}></EvilIconsIcon>
+          </View>
+        </TouchableHighlight>
       </View>
     </View>
   );
@@ -102,18 +112,12 @@ const styles = StyleSheet.create({
     width: 209,
     marginLeft: 17
   },
-  icon: {
-    color: "rgba(255,255,255,1)",
-    fontSize: 23,
-    marginLeft: 24,
-    marginTop: 4
-  },
   imageRow: {
     height: 53,
     flexDirection: "row",
     marginTop: 5,
     marginLeft: 8,
-    marginRight: 2
+    marginRight: 49
   },
   event: {
     top: 9,
@@ -158,48 +162,32 @@ const styles = StyleSheet.create({
   },
   ge250251Points: {
     color: "rgba(255,255,255,1)",
-    height: 18,
+    height: 19,
     width: 302,
     marginTop: 8,
     marginLeft: 8
   },
-  button: {
-    width: 28,
-    height: 28,
-    backgroundColor: "#E6E6E6"
-  },
-  loremIpsum6: {
+  icon: {
     color: "rgba(255,255,255,1)",
-    width: 43,
-    height: 14,
-    marginLeft: 8,
-    marginTop: 6
+    fontSize: 27,
+    marginTop: 7
   },
-  button2: {
-    width: 29,
-    height: 26,
-    backgroundColor: "#E6E6E6",
-    marginLeft: 5
-  },
-  text: {
+  icon2: {
     color: "rgba(255,255,255,1)",
-    width: 47,
-    height: 12,
-    marginLeft: 5,
-    marginTop: 6
+    fontSize: 27,
+    marginLeft: 16,
+    marginTop: 7
   },
-  button3: {
-    width: 70,
-    height: 27,
-    backgroundColor: "#E6E6E6",
-    marginLeft: 45
+  icon3: {
+    color: "rgba(255,255,255,1)",
+    fontSize: 40,
+    marginLeft: 192
   },
-  buttonRow: {
-    height: 28,
+  iconRow: {
+    height: 44,
     flexDirection: "row",
-    marginTop: 14,
-    marginLeft: 15,
-    marginRight: 31
+    marginLeft: 8,
+    marginRight: 16
   }
 });
 

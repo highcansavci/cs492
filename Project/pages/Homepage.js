@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     overflow: "hidden"
   },
   postComponent: {
-    height: "235",
-    alignSelf: "stretch"
+    height: "100%",
+    alignSelf:"stretch",
   },
   dividerStack: {
     flex: 1,
