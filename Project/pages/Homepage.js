@@ -7,51 +7,53 @@ import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 
-function Homepage(props) {
-  return (
-    <View style={styles.container}>
-      <StatusBar
-        animated
-        barStyle="dark-content"
-        backgroundColor="rgba(255,255,255,1)"
-      />
-      <View style={styles.headerTabsColumn}>
-        <View style={styles.headerSectionRow}>
-          <HeaderSection style={styles.headerSection}></HeaderSection>
-          <View style={styles.layoutOptions}>
-            <View style={styles.rect}></View>
-            <View style={styles.rect2}></View>
-            <MaterialCommunityIconsIcon
-              name="feature-search-outline"
-              style={styles.bestPostIcon}
-            ></MaterialCommunityIconsIcon>
-            <Text style={styles.inAWeek}>IN A WEEK</Text>
-            <IoniconsIcon
-              name="md-arrow-dropdown"
-              style={styles.dropdownIcon}
-            ></IoniconsIcon>
+class Homepage extends React.Component {
+  render(){
+    return (
+      <View style={styles.container}>
+        <StatusBar
+          animated
+          barStyle="dark-content"
+          backgroundColor="rgba(255,255,255,1)"
+        />
+        <View style={styles.headerTabsColumn}>
+          <View style={styles.headerSectionRow}>
+            <HeaderSection style={styles.headerSection}></HeaderSection>
+            <View style={styles.layoutOptions}>
+              <View style={styles.rect}></View>
+              <View style={styles.rect2}></View>
+              <MaterialCommunityIconsIcon
+                name="feature-search-outline"
+                style={styles.bestPostIcon}
+              ></MaterialCommunityIconsIcon>
+              <Text style={styles.inAWeek}>IN A WEEK</Text>
+              <IoniconsIcon
+                name="md-arrow-dropdown"
+                style={styles.dropdownIcon}
+              ></IoniconsIcon>
+            </View>
           </View>
         </View>
-      </View>
-      <View style={styles.dividerStack}>
-        <Divider style={styles.divider}></Divider>
-        <View style={styles.scrollArea}>
-          <ScrollView
-            horizontal={false}
-            contentContainerStyle={styles.scrollArea_contentContainerStyle}
-          >   
-          <PostComponent></PostComponent>   
-          <PostComponent></PostComponent>  
-          <PostComponent></PostComponent>  
-          <PostComponent></PostComponent>  
-          <PostComponent></PostComponent>
-          <PostComponent></PostComponent>            
-          </ScrollView>
+        <View style={styles.dividerStack}>
+          <Divider style={styles.divider}></Divider>
+          <View style={styles.scrollArea}>
+            <ScrollView
+              horizontal={false}
+              contentContainerStyle={styles.scrollArea_contentContainerStyle}
+            >   
+            <PostComponent></PostComponent>   
+            <PostComponent></PostComponent>  
+            <PostComponent></PostComponent>  
+            <PostComponent></PostComponent>  
+            <PostComponent></PostComponent>
+            <PostComponent></PostComponent>            
+            </ScrollView>
+          </View>
         </View>
+        <Footer></Footer>
       </View>
-      <Footer style={styles.footer}></Footer>
-    </View>
-  );
+    );
+  }
 }
 
 const styles = StyleSheet.create({

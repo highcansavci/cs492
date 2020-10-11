@@ -3,12 +3,14 @@ import { StyleSheet, View, TouchableOpacity } from "react-native";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
-import { CommonActions, useNavigation,withNavigation  } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native';
 
-function Footer(props) {
+function Footer() {
+  const navigation = useNavigation();
   return (
-    <View style={[styles.container, props.style]}>
-      <TouchableOpacity style={styles.button3} onPress={() => this.props.navigation.navigate('Homepage')}>
+    
+    <View style={[styles.container, styles.property]}>
+      <TouchableOpacity style={styles.button3} onPress={() => navigation.navigate('Homepage')}>
         <MaterialCommunityIconsIcon name="home" style={styles.icon3}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
@@ -16,7 +18,7 @@ function Footer(props) {
         <MaterialCommunityIconsIcon name="heart" style={styles.icon6}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button2} onPress={() => this.props.navigation.navigate('RecommendedEvents')}  >
+      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('RecommendedEvents')}  >
         <MaterialCommunityIconsIcon name="checkbox-multiple-marked-outline" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
@@ -40,11 +42,11 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   icon3: {
-    color: "grey",
+    color: "white",
     fontSize: 28
   },
   icon6: {
-    color: "grey",
+    color: "white",
     fontSize: 28
   },
   button2: {
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
     height: 28
   },
   icon7: {
-    color: "grey",
+    color: "white",
     fontSize: 28
   },
   button4: {
@@ -61,10 +63,13 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   icon4: {
-    color: "rgba(128,128,128,1)",
+    color: "white",
     fontSize: 28,
     alignSelf: "center"
-  }
+  },
+  property: {
+    height: 50
+  },
 });
 
 export default Footer;

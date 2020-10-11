@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
 const { width, height } = Dimensions.get('window');
 
 export default class Login extends React.Component {
@@ -37,9 +36,7 @@ export default class Login extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Signup')}>
           <Text style={styles.loginText} >SIGNUP</Text>
-        </TouchableOpacity>
-
-  
+        </TouchableOpacity>  
       </View>
     );
   }

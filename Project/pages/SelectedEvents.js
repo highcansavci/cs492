@@ -50,7 +50,7 @@ class SelectedEvents extends React.Component {
             </ScrollView>
           </View>
         </View>
-        <Footer style={styles.footer}></Footer>
+        <Footer ></Footer>
       </View>
     );
   }
