@@ -4,6 +4,7 @@ import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommun
 import FontAwesomeIcon from "react-native-vector-icons/FontAwesome";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
+import EntypoIcon from "react-native-vector-icons/Entypo";
 
 function Footer() {
   const navigation = useNavigation();
@@ -24,6 +25,9 @@ function Footer() {
 
       <TouchableOpacity style={styles.button4} onPress={() => console.log("Navigate to Clup List")}>
         <IoniconsIcon name="logo-github" style={styles.icon4}></IoniconsIcon>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('Login')}>
+        <EntypoIcon name="log-out" style={styles.icon8}></EntypoIcon>
       </TouchableOpacity>
     </View>
   );
@@ -54,6 +58,10 @@ const styles = StyleSheet.create({
     height: 28
   },
   icon7: {
+    color: "white",
+    fontSize: 28
+  }, 
+  icon8: {
     color: "white",
     fontSize: 28
   },
