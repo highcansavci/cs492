@@ -1,37 +1,42 @@
 import React, { Component } from "react";
 import { StyleSheet, View, Image, Text, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/Entypo";
 
 function PostComponent(props) {
   return (
     <View style={[styles.container, props.style]}>
-      <View style={styles.postWrapper}>
-        <View style={styles.postHeader}>
-          <Image
-            source={require("../assets/IEEE.jpg")}
-            resizeMode="cover"
-            style={styles.image}
-          ></Image>
-          <View style={styles.headerGroup}>
-            <View style={styles.ieeeStack}>
-              <Text style={styles.ieee}>{props.Subreddit || "IEEE"}</Text>
-              <Text style={styles.postDetails}>{props.text5 || "09.10.2020• 14h"}</Text>
-            </View>
+      <View style={styles.imageRow}>
+        <Image
+          source={require("../assets/IEEE.jpg")}
+          resizeMode="contain"
+          style={styles.image}
+        ></Image>
+        <View style={styles.ieeeStackColumn}>
+          <View style={styles.ieeeStack}>
+            <Text style={styles.ieee}>IEEE</Text>
+            <Text style={styles.loremIpsum5}></Text>
           </View>
-          <Icon name="dots-vertical" style={styles.moreIcon}></Icon>
-          <Text style={styles.event}>
-            Event :{"\n"}Time :{"\n"}Place :{"\n"}Capacity:{"\n"}GE 250/251
-            Points :
-          </Text>
-        </View>
-        <View style={styles.actionBar}>
-          <View style={styles.likeRow}>
-            <TouchableOpacity style={styles.like}></TouchableOpacity>
-            <TouchableOpacity style={styles.dislike}></TouchableOpacity>
-            <Text style={styles.loremIpsum}>3.5k</Text>
-            <TouchableOpacity style={styles.share}></TouchableOpacity>
+          <View style={styles.loremIpsumRow}>
+            <Text style={styles.loremIpsum}>09.10.2020</Text>
+            <Text style={styles.loremIpsum4}>• 14h</Text>
           </View>
         </View>
+        <Icon name="dots-three-vertical" style={styles.icon}></Icon>
+      </View>
+      <View style={styles.eventStack}>
+        <Text style={styles.event}></Text>
+        <Text style={styles.event8}>Event :</Text>
+      </View>
+      <Text style={styles.time}>Time :</Text>
+      <Text style={styles.place}>Place :</Text>
+      <Text style={styles.capacity}>Capacity :</Text>
+      <Text style={styles.ge250251Points}>GE 250/251 Points :</Text>
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={styles.button}></TouchableOpacity>
+        <Text style={styles.loremIpsum6}>3.5 k</Text>
+        <TouchableOpacity style={styles.button2}></TouchableOpacity>
+        <Text style={styles.text}>3.5 k</Text>
+        <TouchableOpacity style={styles.button3}></TouchableOpacity>
       </View>
     </View>
   );
@@ -53,125 +58,148 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,1)"
   },
-  postWrapper: {
-    height: 217,
-    alignItems: "flex-start",
-    alignSelf: "stretch",
-    justifyContent: "space-around",
-    marginTop: 0,
-    margin: 0,
-    shadowColor: "rgba(0,0,0,1)",
-    shadowOffset: {
-      height: 0,
-      width: 3
-    },
-    elevation: 5,
-    shadowOpacity: 0.01,
-    shadowRadius: 0
-  },
-  postHeader: {
-    width: 318,
-    height: 131,
-    flexDirection: "row",
-    alignSelf: "center",
-    justifyContent: "space-between",
-    marginRight: 0,
-    marginLeft: 0,
-    left: 25,
-    top: -5,
-    backgroundColor: "rgba(15,15, 15,0)"
-  },
   image: {
-    width: 30,
-    height: 30,
-    borderRadius: 100
-  },
-  headerGroup: {
-    width: 250,
-    height: 27,
-    left: 44,
-    top: 0
+    width: 43,
+    height: 49
   },
   ieee: {
     top: 0,
     left: 0,
-    color: "rgba(255,255,255,1)",
     position: "absolute",
-    fontSize: 14,
-    letterSpacing: 1
+    color: "rgba(255,255,255,1)",
+    fontSize: 19,
+    width: 209,
+    height: 24
   },
-  postDetails: {
-    top: 15,
-    left: 0,
-    color: "rgba(255,255,255,1)",
+  loremIpsum5: {
+    top: 12,
+    left: 117,
     position: "absolute",
-    fontSize: 12,
-    letterSpacing: 1
+    color: "#121212"
   },
   ieeeStack: {
-    width: 34,
-    height: 30
-  },
-  moreIcon: {
-    color: "grey",
-    fontSize: 18,
-    left: 283,
-    width: 18,
-    top: 0,
-    height: 19
-  },
-  event: {
-    top: 37,
-    left: 9,
-    position: "absolute",
-    color: "rgba(255,255,255,1)",
-    height: 105,
-    width: 260
-  },
-  actionBar: {
-    width: 314,
-    height: 53,
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "center",
-    justifyContent: "space-between",
-    marginRight: 0,
-    marginLeft: 0,
-    left: 0,
-    top: 128
-  },
-  like: {
-    width: 34,
-    height: 32,
-    backgroundColor: "#E6E6E6"
-  },
-  dislike: {
-    width: 35,
-    height: 32,
-    backgroundColor: "#E6E6E6",
-    marginLeft: 14
+    width: 209,
+    height: 24
   },
   loremIpsum: {
     color: "rgba(255,255,255,1)",
-    height: 22,
-    width: 73,
-    fontSize: 16,
-    marginLeft: 13,
-    marginTop: 5
+    width: 74,
+    height: 24
   },
-  share: {
-    width: 59,
-    height: 32,
-    backgroundColor: "#E6E6E6",
-    marginLeft: 57
+  loremIpsum4: {
+    color: "rgba(255,255,255,1)",
+    height: 18,
+    width: 39,
+    marginLeft: 4
   },
-  likeRow: {
-    height: 32,
+  loremIpsumRow: {
+    height: 24,
     flexDirection: "row",
-    flex: 1,
-    marginRight: 17,
-    marginLeft: 12,
-    marginTop: 10
+    marginTop: 5,
+    marginRight: 92
+  },
+  ieeeStackColumn: {
+    width: 209,
+    marginLeft: 17
+  },
+  icon: {
+    color: "rgba(255,255,255,1)",
+    fontSize: 23,
+    marginLeft: 24,
+    marginTop: 4
+  },
+  imageRow: {
+    height: 53,
+    flexDirection: "row",
+    marginTop: 5,
+    marginLeft: 8,
+    marginRight: 2
+  },
+  event: {
+    top: 9,
+    left: 15,
+    position: "absolute",
+    color: "#121212"
+  },
+  event8: {
+    top: 0,
+    position: "absolute",
+    color: "rgba(255,255,255,1)",
+    height: 19,
+    width: 302,
+    left: 0
+  },
+  eventStack: {
+    width: 302,
+    height: 19,
+    marginTop: 9,
+    marginLeft: 8
+  },
+  time: {
+    color: "rgba(255,255,255,1)",
+    height: 19,
+    width: 302,
+    marginTop: 5,
+    marginLeft: 8
+  },
+  place: {
+    color: "rgba(255,255,255,1)",
+    height: 19,
+    width: 302,
+    marginTop: 5,
+    marginLeft: 8
+  },
+  capacity: {
+    color: "rgba(255,255,255,1)",
+    height: 19,
+    width: 302,
+    marginTop: 6,
+    marginLeft: 8
+  },
+  ge250251Points: {
+    color: "rgba(255,255,255,1)",
+    height: 18,
+    width: 302,
+    marginTop: 8,
+    marginLeft: 8
+  },
+  button: {
+    width: 28,
+    height: 28,
+    backgroundColor: "#E6E6E6"
+  },
+  loremIpsum6: {
+    color: "rgba(255,255,255,1)",
+    width: 43,
+    height: 14,
+    marginLeft: 8,
+    marginTop: 6
+  },
+  button2: {
+    width: 29,
+    height: 26,
+    backgroundColor: "#E6E6E6",
+    marginLeft: 5
+  },
+  text: {
+    color: "rgba(255,255,255,1)",
+    width: 47,
+    height: 12,
+    marginLeft: 5,
+    marginTop: 6
+  },
+  button3: {
+    width: 70,
+    height: 27,
+    backgroundColor: "#E6E6E6",
+    marginLeft: 45
+  },
+  buttonRow: {
+    height: 28,
+    flexDirection: "row",
+    marginTop: 14,
+    marginLeft: 15,
+    marginRight: 31
   }
 });
 

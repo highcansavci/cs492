@@ -39,7 +39,18 @@ function Home(props) {
           <ScrollView
             horizontal={false}
             contentContainerStyle={styles.scrollArea_contentContainerStyle}
-          >        
+          >   
+          <PostComponent></PostComponent>   
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>  
+          <PostComponent></PostComponent>  
           </ScrollView>
         </View>
       </View>
@@ -139,12 +150,12 @@ const styles = StyleSheet.create({
     bottom: 0
   },
   scrollArea_contentContainerStyle: {
-    height: 537,
+    height :"auto",
     justifyContent: "flex-start",
     overflow: "hidden"
   },
   postComponent: {
-    height: 231,
+    height: "235",
     alignSelf: "stretch"
   },
   dividerStack: {
