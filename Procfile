@@ -1,1 +1,0 @@
-web: gunicorn bilevents.wsgi --log-file -
