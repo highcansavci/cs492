@@ -19,7 +19,7 @@ export default class Login extends React.Component {
             placeholder="ID number" 
             placeholderTextColor="white"
             onChangeText={text => this.setState({email:text})}/>
-        </View>
+        </View>        
         <View style={styles.inputView} >
           <TextInput  
             secureTextEntry

@@ -4,8 +4,12 @@ import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions }
 const { width, height } = Dimensions.get('window');
 export default class App extends React.Component {
   state={
+    IDNo:0,
     email:"",
-    password:""
+    password:"",
+    name:"",
+    surname:"",
+
   }
   render(){
     return (
@@ -18,23 +22,28 @@ export default class App extends React.Component {
             style={styles.inputText}
             placeholder="ID number" 
             placeholderTextColor="white"
+            onChangeText={text => this.setState({IDNo:text})}/>
+        </View>
+        <View style={styles.inputView} >
+          <TextInput  
+            style={styles.inputText}
+            placeholder="E-Mail Address" 
+            placeholderTextColor="white"
             onChangeText={text => this.setState({email:text})}/>
         </View>
         <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
+          <TextInput              
             style={styles.inputText}
             placeholder="Name" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({password:text})}/>
+            onChangeText={text => this.setState({name:text})}/>
         </View>
         <View style={styles.inputView} >
           <TextInput  
-            secureTextEntry
             style={styles.inputText}
             placeholder="Surname" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({password:text})}/>
+            onChangeText={text => this.setState({surname:text})}/>
         </View>
         <View style={styles.inputView} >
           <TextInput  
@@ -65,15 +74,15 @@ const styles = StyleSheet.create({
   },
 
   logo: {
-    width: width * 0.7,
-    height: height * 0.5,
+    width: width * 0.67,
+    height: height * 0.48,
   },
 
   inputView:{
-    width:"50%",
+    width:"80%",
     backgroundColor:"#465881",
     borderRadius:25,
-    height:'6%',
+    height:'5%',
     marginBottom:'2.5%',
     justifyContent:"center",
     padding:20

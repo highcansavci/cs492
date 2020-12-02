@@ -23,7 +23,7 @@ function Footer() {
         <MaterialCommunityIconsIcon name="checkbox-multiple-marked-outline" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button4} onPress={() => console.log("Navigate to Clup List")}>
+      <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('ClubList')}>
         <IoniconsIcon name="logo-github" style={styles.icon4}></IoniconsIcon>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('Login')}>

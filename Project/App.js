@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import Homepage from './pages/Homepage';
 import SelectedEvents from './pages/SelectedEvents';
 import RecommendedEvents from './pages/RecommendedEvents';
+import ClubList from './pages/ClubList';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,11 @@ function NavStack() {
         name="RecommendedEvents" 
         component={RecommendedEvents} 
         options={{ title: 'Recommended Events' }}
+      />
+      <Stack.Screen 
+        name="ClubList" 
+        component={ClubList} 
+        options={{ title: 'Club List' }}
       />
     </Stack.Navigator>
   );
