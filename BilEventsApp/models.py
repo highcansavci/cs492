@@ -15,21 +15,16 @@ class Participant(models.Model):
     def __str__(self):
         return self.first_name + " " + self.last_name
 
-class ClubLeader(Participant):
-    def __str__(super):
-        return super.first_name + " " + super.last_name
-
 class Club(models.Model):
     club_name = models.CharField(max_length=50)
     club_description = models.TextField()
     club_tags = models.CharField(max_length=200)
     logo = models.ImageField(upload_to="images/", null=True, blank=True)
-    club_leader = models.OneToOneField(
-        ClubLeader,
+    leader = models.OneToOneField(
+        Participant,
         on_delete=models.CASCADE,
     )
-    club_participants = models.ManyToManyField(Participant)
-
+    participants = models.ManyToManyField(Participant, related_name='club_participants')
     class Meta:
         ordering = ('club_name',)
 
@@ -44,7 +39,7 @@ class Event(models.Model):
     event_description = models.TextField()
     event_tags = models.CharField(max_length=200)
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)
-    participants = models.ManyToManyField(Participant)
+    participants = models.ManyToManyField(Participant, blank=True, null=True)
     club = models.ForeignKey(Club, blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
@@ -55,7 +50,6 @@ class Event(models.Model):
 
 class RecommendedEvent(Event):
     user = models.ForeignKey(Participant, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.user.username + " " + self.event_name
 

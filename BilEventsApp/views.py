@@ -1,5 +1,5 @@
-from .models import Club, Event, RecommendedEvent, ClubLeader, Participant
-from .serializers import CurrentParticipantSerializer, ClubSerializer, ClubLeaderSerializer, EventSerializer, RecommendedEventSerializer
+from .models import Club, Event, RecommendedEvent, Participant
+from .serializers import CurrentParticipantSerializer, ClubSerializer, EventSerializer, RecommendedEventSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
@@ -90,63 +90,6 @@ class ParticipantViewSet(viewsets.ViewSet):
         participant.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-class ClubLeaderViewSet(viewsets.ViewSet):
-
-    @permission_classes([IsAdminUser])
-    def list(self, request):
-        leaders = ClubLeader.objects.all()
-        serializer = ClubLeaderSerializer(leaders, many=True)
-        return Response(serializer.data)
-
-    @permission_classes([IsAdminUser])
-    def create(self, request):
-        serializer = ClubLeaderSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([SelfOrAdmin])
-    def retrieve(self, request, pk=None):
-        queryset = ClubLeader.objects.all()
-        leader = get_object_or_404(queryset, pk)
-        data = {
-            'id': leader.id, 
-            'bilkent_id': leader.bilkent_id,
-            'first_name': leader.first_name,
-            'last_name': leader.last_name,
-            'email': leader.email, 
-            'password': leader.password
-        }
-        serializer = ClubLeaderSerializer(leader, data=data)
-        if serializer.is_valid():
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-    @permission_classes([SelfOrAdmin])
-    def update(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        serializer = ClubLeaderSerializer(leader, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([SelfOrAdmin])
-    def partial_update(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        serializer = ClubLeaderSerializer(leader, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([SelfOrAdmin])
-    def destroy(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        leader.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
 class ClubViewSet(viewsets.ViewSet):
 
     @permission_classes([IsAuthenticated | IsAdminUser])
@@ -215,7 +158,7 @@ class EventViewSet(viewsets.ViewSet):
     @permission_classes([EventLeaderOrAdmin])
     def create(self, request):
         self.check_object_permissions(self.request, request.data)
-        serializer = ClubSerializer(data=request.data)
+        serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -290,7 +233,7 @@ class RecommendedEventViewSet(viewsets.ViewSet):
             'participants': recevent.participants, 
             'club': recevent.club
         }
-        serializer = EventSerializer(recevent, data=data)
+        serializer = RecommendedEventSerializer(recevent, data=data)
         if serializer.is_valid():
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
