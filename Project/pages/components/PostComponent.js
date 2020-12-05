@@ -3,8 +3,8 @@ import { StyleSheet, View, Image, Text,TouchableHighlight } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
 
-function PostComponent(props) {
-  return (
+function PostComponent(props){
+    return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
         <Image
@@ -25,7 +25,7 @@ function PostComponent(props) {
       </View>
       <View style={styles.eventStack}>
         <Text style={styles.event}></Text>
-        <Text style={styles.event8}>Event :</Text>
+        <Text style={styles.event8}>Event : </Text>
       </View>
       <Text style={styles.time}>Time :</Text>
       <Text style={styles.place}>Place :</Text>
@@ -50,6 +50,7 @@ function PostComponent(props) {
       </View>
     </View>
   );
+  
 }
 
 const styles = StyleSheet.create({

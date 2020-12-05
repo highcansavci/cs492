@@ -2,15 +2,37 @@ import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
-export default class App extends React.Component {
+export default class Signup extends React.Component {
   state={
-    IDNo:0,
+    bilkent_id:"",
+    first_name:"",
+    last_name:"",
     email:"",
     password:"",
-    name:"",
-    surname:"",
-
   }
+  userSignup(participant) { 
+    if (participant) { // if validation fails, value will be null 
+      fetch("https://bileventsapp.herokuapp.com/viewset/participants/", { 
+        method: "POST", 
+        headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({ 
+          bilkent_id:participant.bilkent_id,
+          first_name:participant.first_name,
+          last_name:participant.last_name,
+          email: participant.email, 
+          password: participant.password, 
+        }) 
+      })       
+      .then((response) => JSON.stringify(response.json())) 
+      .then((responseData) => { console.log("response: " + responseData);alert("Signed Up Successfully" );this.props.navigation.navigate('Login'); })
+      .catch((err) => { console.log(err);alert("Olmadı orospu çocu"); this.props.navigation.navigate('Signup'); });
+
+    }
+  } 
+  
   render(){
     return (
       <View style={styles.container}>
@@ -22,7 +44,7 @@ export default class App extends React.Component {
             style={styles.inputText}
             placeholder="ID number" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({IDNo:text})}/>
+            onChangeText={text => this.setState({bilkent_id:text})}/>
         </View>
         <View style={styles.inputView} >
           <TextInput  
@@ -36,14 +58,14 @@ export default class App extends React.Component {
             style={styles.inputText}
             placeholder="Name" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({name:text})}/>
+            onChangeText={text => this.setState({first_name:text})}/>
         </View>
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
             placeholder="Surname" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({surname:text})}/>
+            onChangeText={text => this.setState({last_name:text})}/>
         </View>
         <View style={styles.inputView} >
           <TextInput  
@@ -56,10 +78,9 @@ export default class App extends React.Component {
         <TouchableOpacity>
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Login')}>
+        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.userSignup(this.state)}>
           <Text style={styles.loginText}>REGISTER</Text>
         </TouchableOpacity>
-  
       </View>
     );
   }

@@ -2,10 +2,26 @@ import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
+
 export default class Login extends React.Component {
   state={
-    email:"",
+    bilkent_id:"",
     password:""
+  }
+   
+  userLogin(participant) { 
+    if (participant) { 
+      fetch(('https://bileventsapp.herokuapp.com/viewset/participants/?bilkent_id=${encodeURIComponent(state.bilkent_id)}&password=${encodeURIComponent(state.password)}', { 
+        method: "GET", 
+        headers: { 
+          'Accept': 'application/json', 
+          'Content-Type': 'application/json' 
+        },        
+      })       
+      .then((res) => res.json())
+      .then((responseData) => { console.log("response: " + responseData);this.props.navigation.navigate('Homepage'); })
+      .catch((err) => { console.log(err);alert("Wrong ID or Password"); }))
+    }
   }
   render(){
     return (
@@ -16,9 +32,9 @@ export default class Login extends React.Component {
         <View style={styles.inputView} >
           <TextInput  
             style={styles.inputText}
-            placeholder="ID number" 
+            placeholder="ID Number" 
             placeholderTextColor="white"
-            onChangeText={text => this.setState({email:text})}/>
+            onChangeText={text => this.setState({bilkent_id:text})}/>
         </View>        
         <View style={styles.inputView} >
           <TextInput  
@@ -31,7 +47,8 @@ export default class Login extends React.Component {
         <TouchableOpacity>
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Homepage')}>
+        
+        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Homepage')}> 
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Signup')}>
@@ -41,7 +58,7 @@ export default class Login extends React.Component {
     );
   }
 }
-
+//this.userLogin(this.state)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
