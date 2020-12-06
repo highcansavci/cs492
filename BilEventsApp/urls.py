@@ -11,5 +11,5 @@ router.register(r'recommendedevents', RecommendedEventViewSet, basename='recomme
 
 urlpatterns = [
     path('viewset/', include(router.urls)),
-    path('viewset/<int:pk>/', include(router.urls)),
+    path('viewset/<pk>/', include(router.urls)),
 ]
