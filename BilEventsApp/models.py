@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import RegexValidator
+from django.db.models import Count
 # Create your models here.
 
 class Participant(models.Model):
@@ -16,6 +17,7 @@ class Participant(models.Model):
 
     def __str__(self):
         return self.first_name + " " + self.last_name
+
 
 class Club(models.Model):
     club_name = models.CharField(max_length=50, unique=True)
@@ -39,12 +41,18 @@ class Event(models.Model):
     event_name = models.CharField(unique=True, max_length=50)
     event_place = models.TextField()
     event_time = models.DateTimeField()
-    event_capacity = models.PositiveIntegerField(default=0)
+    event_max_capacity = models.PositiveIntegerField(default=0)
     event_description = models.TextField(default="")
     event_tags = models.CharField(max_length=200)
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)
-    participants = models.ManyToManyField(Participant, blank=True, null=True)
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
     club = models.ForeignKey(Club, blank=True, null=True, on_delete=models.CASCADE)
+    event_current_capacity = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        print(Participant.objects.all().annotate(event_count=models.Count('event_participants')).count())
+        self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ('event_time',)
@@ -57,7 +65,7 @@ class RecommendedEvent(models.Model):
     event_name = models.CharField(unique=True, max_length=50)
     event_place = models.TextField()
     event_time = models.DateTimeField()
-    event_capacity = models.PositiveIntegerField(default=0)
+    event_max_capacity = models.PositiveIntegerField(default=0)
     event_description = models.TextField(default="")
     event_tags = models.CharField(max_length=200)
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)

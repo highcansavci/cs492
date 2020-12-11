@@ -3,14 +3,17 @@ from .serializers import CurrentParticipantSerializer, ClubSerializer, EventSeri
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+from rest_framework import permissions
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
+from rest_framework.views import APIView
+from django.contrib.auth import authenticate
+
 
 # Create your views here.
 
 class SelfOrAdmin(BasePermission):
-
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -37,6 +40,18 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     serializer_class = CurrentParticipantSerializer
     permission_classes = [IsAuthenticated | IsAdminUser]
     lookup_field = 'bilkent_id'
+
+
+class LoginView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    @staticmethod
+    def get(request):
+        user = get_object_or_404(Participant, bilkent_id=request.GET['bilkent_id'])
+        if user.password == request.GET['password']:
+            serializer = CurrentParticipantSerializer(user)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
 class ClubViewSet(viewsets.ModelViewSet):
     queryset = Club.objects.all()

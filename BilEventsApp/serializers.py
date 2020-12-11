@@ -19,6 +19,7 @@ class CurrentParticipantSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError("You must have a valid BCC domain account.")
 
+
 class ClubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Club
@@ -41,8 +42,8 @@ class EventSerializer(serializers.ModelSerializer):
         fields = '__all__'
     
     def to_representation(self, instance):
-        data = super(ClubSerializer, self).to_representation(instance)
-        data['club'] = CurrentParticipantSerializer(instance.club).data
+        data = super(EventSerializer, self).to_representation(instance)
+        data['club'] = ClubSerializer(instance.club).data
         temp = []
         for pid in list(data['participants']):
             queryset = Participant.objects.all()
