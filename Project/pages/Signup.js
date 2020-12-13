@@ -28,7 +28,7 @@ export default class Signup extends React.Component {
       })       
       .then((response) => JSON.stringify(response.json())) 
       .then((responseData) => { console.log("response: " + responseData);alert("Signed Up Successfully" );this.props.navigation.navigate('Login'); })
-      .catch((err) => { console.log(err);alert("Olmadı orospu çocu"); this.props.navigation.navigate('Signup'); });
+      .catch((err) => { console.log(err);alert("Unsuccessful Register"); this.props.navigation.navigate('Signup'); });
 
     }
   } 

@@ -3,25 +3,28 @@ import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions }
 const { width, height } = Dimensions.get('window');
 
 
+ 
+
 export default class Login extends React.Component {
   state={
     bilkent_id:"",
     password:""
   }
-   
-  userLogin(participant) { 
-    if (participant) { 
-      fetch(('https://bileventsapp.herokuapp.com/viewset/participants/?bilkent_id=${encodeURIComponent(state.bilkent_id)}&password=${encodeURIComponent(state.password)}', { 
-        method: "GET", 
-        headers: { 
-          'Accept': 'application/json', 
-          'Content-Type': 'application/json' 
-        },        
-      })       
-      .then((res) => res.json())
-      .then((responseData) => { console.log("response: " + responseData);this.props.navigation.navigate('Homepage'); })
-      .catch((err) => { console.log(err);alert("Wrong ID or Password"); }))
-    }
+  userLogin (bilkent_id,password) { 
+    var url = 'https://bileventsapp.herokuapp.com/viewset/participants/' + bilkent_id;
+    fetch((url), { 
+      method: "GET", 
+      headers: { 
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json'
+       },        
+    })
+    /*       
+    .then(response  => response.json())
+    .then(json  => { this.props.navigation.navigate('Homepage');})
+    .catch((err) => { console.log(err);alert("Wrong ID or Password"); })
+    */
+    this.props.navigation.navigate('Homepage'); 
   }
   render(){
     return (
@@ -48,7 +51,7 @@ export default class Login extends React.Component {
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Homepage')}> 
+        <TouchableOpacity style={styles.loginBtn} onPress = {() => this.userLogin(this.state.bilkent_id,this.state.password)}> 
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Signup')}>

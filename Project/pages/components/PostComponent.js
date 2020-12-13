@@ -4,6 +4,7 @@ import EntypoIcon from "react-native-vector-icons/Entypo";
 import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
 
 function PostComponent(props){
+
     return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
