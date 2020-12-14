@@ -1,6 +1,6 @@
 from django.urls import path, include
 from django.conf.urls import url
-from .views import ParticipantViewSet, ClubViewSet, EventViewSet, RecommendedEventViewSet, LoginView
+from .views import ParticipantViewSet, ClubViewSet, EventViewSet, RecommendedEventViewSet, LoginView, RegisterView
 from rest_framework.routers import DefaultRouter
 
 
@@ -13,5 +13,6 @@ router.register(r'recommendedevents', RecommendedEventViewSet, basename='recomme
 urlpatterns = [
     path('viewset/', include(router.urls)),
     path('viewset/<pk>/', include(router.urls)),
-    path('auth/login', LoginView.as_view())
+    path('auth/login', LoginView.as_view()),
+    path('auth/register', RegisterView.as_view())
 ]
