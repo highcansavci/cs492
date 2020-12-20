@@ -7,7 +7,6 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate
 
 
 # Create your views here.
@@ -24,11 +23,13 @@ class LoginView(APIView):
     permission_classes = ()
     @staticmethod
     def get(request):
-        user = get_object_or_404(Participant, bilkent_id=request.GET['bilkent_id'])
-        if user.password == request.GET['password']:
-            serializer = CurrentParticipantSerializer(user)
-            return Response(serializer.data)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        if str(request.GET['bilkent_id']).isdigit() and len(str(request.GET['bilkent_id'])) == 8:
+            user = get_object_or_404(Participant, bilkent_id=request.GET['bilkent_id'])
+            if user.password == request.GET['password']:
+                serializer = CurrentParticipantSerializer(user)
+                return Response(serializer.data)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(APIView):
     authentication_classes = ()

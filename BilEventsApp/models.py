@@ -4,7 +4,7 @@ from django.db.models import Count
 # Create your models here.
 
 class Participant(models.Model):
-    bilkent_id = models.PositiveIntegerField(primary_key = True, validators=[RegexValidator(regex='^[0-9]{8}$', message='Length has to be 4', code='nomatch')])
+    bilkent_id = models.PositiveIntegerField(primary_key = True, validators=[RegexValidator(regex='^[0-9]{8}$', message='Length has to be 8', code='nomatch')])
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.CharField(unique = True, max_length=50)
@@ -41,6 +41,7 @@ class Event(models.Model):
     event_name = models.CharField(unique=True, max_length=50)
     event_place = models.TextField()
     event_time = models.DateTimeField()
+    event_points = models.PositiveIntegerField(default=0)
     event_max_capacity = models.PositiveIntegerField(default=0)
     event_description = models.TextField(default="")
     event_tags = models.CharField(max_length=200)
@@ -64,6 +65,7 @@ class Event(models.Model):
 class RecommendedEvent(models.Model):
     event_name = models.CharField(unique=True, max_length=50)
     event_place = models.TextField()
+    event_points = models.PositiveIntegerField(default=0)
     event_time = models.DateTimeField()
     event_max_capacity = models.PositiveIntegerField(default=0)
     event_description = models.TextField(default="")
