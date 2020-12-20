@@ -8,7 +8,7 @@ import Homepage from './pages/Homepage';
 import SelectedEvents from './pages/SelectedEvents';
 import RecommendedEvents from './pages/RecommendedEvents';
 import ClubList from './pages/ClubList';
-
+import ForgotPassword from './pages/ForgotPassword';
 const Stack = createStackNavigator();
 
 function NavStack() {
@@ -36,6 +36,11 @@ function NavStack() {
         name="Signup" 
         component={Signup} 
         options={{ title: 'Signup' }}
+      />
+      <Stack.Screen 
+        name="ForgotPassword" 
+        component={ForgotPassword} 
+        options={{ title: 'Forgot Password' }}
       />
        <Stack.Screen 
         name="Homepage" 

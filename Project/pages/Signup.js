@@ -10,28 +10,31 @@ export default class Signup extends React.Component {
     email:"",
     password:"",
   }
-  userSignup(participant) { 
-    if (participant) { // if validation fails, value will be null 
-      fetch("https://bileventsapp.herokuapp.com/viewset/participants/", { 
-        method: "POST", 
-        headers: { 
-          'Accept': 'application/json', 
-          'Content-Type': 'application/json' 
-        },
-        body: JSON.stringify({ 
-          bilkent_id:participant.bilkent_id,
-          first_name:participant.first_name,
-          last_name:participant.last_name,
-          email: participant.email, 
-          password: participant.password, 
-        }) 
-      })       
-      .then((response) => JSON.stringify(response.json())) 
-      .then((responseData) => { console.log("response: " + responseData);alert("Signed Up Successfully" );this.props.navigation.navigate('Login'); })
-      .catch((err) => { console.log(err);alert("Unsuccessful Register"); this.props.navigation.navigate('Signup'); });
-
+  async userSignup() { 
+    const response = await fetch("https://bileventsapp.herokuapp.com/auth/register", { 
+      method: "POST", 
+      headers: { 
+        'Accept': 'application/json', 
+        'Content-Type': 'application/json' 
+      },
+      body: JSON.stringify({ 
+        bilkent_id:this.state.bilkent_id,
+        first_name:this.state.first_name,
+        last_name:this.state.last_name,
+        email: this.state.email, 
+        password: this.state.password, 
+      }) 
+    });
+    const data = await response.json();
+    if(response.status == "400")
+    {
+      alert("Unsuccessful Register\nInvalid Inputs");
     }
-  } 
+    else{
+      alert("Signed Up Successfully" );
+      this.props.navigation.navigate('Login');
+    }
+  }
   
   render(){
     return (

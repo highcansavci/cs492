@@ -7,8 +7,38 @@ import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 
+function myFunction(datetime) {
+  date = new Date(datetime);
+  now = new Date();
+  var ms = now - date;
+  days = Math.floor(ms / (24 * 60 * 60 * 1000));
+  daysms=ms % (24 * 60 * 60 * 1000);
+  hours = Math.floor((daysms)/(60 * 60 * 1000));
+  return days+"d "+hours+"h";
+}
+
+
 class Homepage extends React.Component {
+state= {
+  data:[],
+  posts:,
+}
+  async getComponent(){
+
+   const response = await fetch("https://bileventsapp.herokuapp.com/viewset/events/");
+   const data = await response.json();
+   this.state.data = data;
+   console.log(data);
+
+   /*
+   {this.state.data.map(i => {
+              
+    <PostComponent clubName= {i.club_name} dateTime={date} postAgo={myFunction(i.event_time)} eventName={i.event_name} time={time} place ={i.event_place}  capacity={i.event_max_capacity} gePoints={i.event_points}></PostComponent>
+   })}
+   */
+  }
   render(){
+
     return (
       <View style={styles.container}>
         <StatusBar
@@ -37,16 +67,9 @@ class Homepage extends React.Component {
         <View style={styles.dividerStack}>
           <Divider style={styles.divider}></Divider>
           <View style={styles.scrollArea}>
-            <ScrollView
-              horizontal={false}
-              contentContainerStyle={styles.scrollArea_contentContainerStyle}
-            >   
-            <PostComponent></PostComponent>   
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>
-            <PostComponent></PostComponent>            
+            <ScrollView horizontal={false} contentContainerStyle={styles.scrollArea_contentContainerStyle}> 
+            {this.getComponent()}
+
             </ScrollView>
           </View>
         </View>

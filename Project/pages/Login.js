@@ -3,28 +3,36 @@ import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions }
 const { width, height } = Dimensions.get('window');
 
 
- 
 
 export default class Login extends React.Component {
   state={
     bilkent_id:"",
-    password:""
+    password:"",
   }
-  userLogin (bilkent_id,password) { 
-    var url = 'https://bileventsapp.herokuapp.com/viewset/participants/' + bilkent_id;
-    fetch((url), { 
-      method: "GET", 
-      headers: { 
-        'Accept': 'application/json', 
-        'Content-Type': 'application/json'
-       },        
-    })
-    /*       
-    .then(response  => response.json())
-    .then(json  => { this.props.navigation.navigate('Homepage');})
-    .catch((err) => { console.log(err);alert("Wrong ID or Password"); })
-    */
-    this.props.navigation.navigate('Homepage'); 
+
+  async userLogin (bilkent_id,password) {
+    var url;
+    if(bilkent_id == "" && password == "")
+      url = "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+"12123098"+"&password="+"1231dsf23";
+    else
+      url = "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+bilkent_id+"&password="+password;
+
+    const response = await fetch(url);
+    if(response.status == "400")
+    {
+      alert("Invalid Symbol");
+      this.props.navigation.navigate('Login');
+    }
+    const data = await response.json();
+
+    if(data.bilkent_id == bilkent_id && data.password == password){
+      this.props.navigation.navigate('Homepage');
+    }
+    else{
+      alert("Wrong ID or Password");
+      this.props.navigation.navigate('Login');
+    }
+
   }
   render(){
     return (
@@ -34,7 +42,9 @@ export default class Login extends React.Component {
         </View>  
         <View style={styles.inputView} >
           <TextInput  
-            style={styles.inputText}
+            style={styles.inputText} 
+            keyboardType= "number-pad"
+            maxLength={8}
             placeholder="ID Number" 
             placeholderTextColor="white"
             onChangeText={text => this.setState({bilkent_id:text})}/>
@@ -48,10 +58,10 @@ export default class Login extends React.Component {
             onChangeText={text => this.setState({password:text})}/>
         </View>
         <TouchableOpacity>
-          <Text style={styles.forgot}>Forgot Password?</Text>
+          <Text style={styles.forgot} onPress = {() =>this.props.navigation.navigate('ForgotPassword')}>Forgot Password?</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity style={styles.loginBtn} onPress = {() => this.userLogin(this.state.bilkent_id,this.state.password)}> 
+        <TouchableOpacity style={styles.loginBtn}  onPress = {() => this.userLogin(this.state.bilkent_id,this.state.password)}> 
           <Text style={styles.loginText}>LOGIN</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress = {() =>this.props.navigation.navigate('Signup')}>
@@ -61,7 +71,7 @@ export default class Login extends React.Component {
     );
   }
 }
-//this.userLogin(this.state)
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -89,8 +99,15 @@ const styles = StyleSheet.create({
     color:"white"
   },
   forgot:{
+    width: "100%",
+    height: 30,
     color:"black",
-    fontSize:11
+    fontSize:13,
+    marginBottom:'2.5%',
+    marginTop:'2.5%',
+    borderRadius:25,
+    alignItems: 'center',
+    textDecorationLine: 'underline'
   },
   loginBtn:{
     width:"50%",

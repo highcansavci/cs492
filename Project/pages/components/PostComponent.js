@@ -15,23 +15,22 @@ function PostComponent(props){
         ></Image>
         <View style={styles.ieeeStackColumn}>
           <View style={styles.ieeeStack}>
-            <Text style={styles.ieee}>IEEE</Text>
-            <Text style={styles.loremIpsum5}></Text>
+            <Text style={styles.ieee}>{props.clubName}</Text>
           </View>
           <View style={styles.loremIpsumRow}>
-            <Text style={styles.loremIpsum}>09.10.2020</Text>
-            <Text style={styles.loremIpsum4}>• 14h</Text>
+            <Text style={styles.loremIpsum}>{props.dateTime}</Text>
+            <Text style={styles.loremIpsum4}> - {props.postAgo}</Text>
           </View>
         </View>
       </View>
       <View style={styles.eventStack}>
         <Text style={styles.event}></Text>
-        <Text style={styles.event8}>Event : </Text>
+        <Text style={styles.event8}>Event : {props.eventName}</Text>
       </View>
-      <Text style={styles.time}>Time :</Text>
-      <Text style={styles.place}>Place :</Text>
-      <Text style={styles.capacity}>Capacity :</Text>
-      <Text style={styles.ge250251Points}>GE 250/251 Points :</Text>
+      <Text style={styles.time}>Time : {props.time}</Text>
+      <Text style={styles.place}>Place : {props.place}</Text>
+      <Text style={styles.capacity}>Capacity : {props.capacity}</Text>
+      <Text style={styles.ge250251Points}>GE 250/251 Points : {props.gePoints}</Text>
       <View style={styles.iconRow}>
         <TouchableHighlight onPress={()=>console.log("Join")}>
             <View>
