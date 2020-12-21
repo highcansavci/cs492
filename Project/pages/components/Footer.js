@@ -6,7 +6,7 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import EntypoIcon from "react-native-vector-icons/Entypo";
 
-function Footer() {
+function Footer(props) {
   const navigation = useNavigation();
   return (
     

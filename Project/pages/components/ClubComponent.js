@@ -8,22 +8,22 @@ function ClubComponent(props) {
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
         <Image
-          source={require("../assets/IEEE.jpg")}
+          source={(props.logo)}
           resizeMode="contain"
           style={styles.image}
         ></Image>
         <View style={styles.ieeeStackColumn}>
           <View style={styles.ieeeStack}>
-            <Text style={styles.ieee}>Club Name</Text>
+            <Text style={styles.ieee}>{props.club_name}</Text>
           </View>          
         </View>
       </View>
       <View style={styles.eventStack}>
         <Text style={styles.event}></Text>
-        <Text style={styles.event8}>Club Leader :</Text>
+        <Text style={styles.event8}>Club Leader : {props.leader}</Text>
       </View>
-      <Text style={styles.time}>Definition :</Text>
-      <Text style={styles.capacity}>Tags :</Text>
+      <Text style={styles.time}>Description :  {props.description}</Text>
+      <Text style={styles.capacity}>Tags :  {props.tag}</Text>
       <View style={styles.iconRow}>
         <TouchableHighlight onPress={()=>console.log("Join")}>
             <View>

@@ -4,11 +4,74 @@ import HeaderSection from "./components/HeaderSection";
 import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import Divider from "./components/Divider";
-import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 import ClubComponent from "./components/ClubComponent";
 
+const setPostComponents = (stateData) => {
+  if(null == stateData || undefined == stateData)
+    return;
+
+  if(stateData.isLoading)
+    return (<Text>Loaging.....</Text>)
+
+  else if(stateData.isError)
+    return (<Text>An error has occured!</Text>)
+
+  else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
+    return stateData.data.map(i => (
+      <ClubComponent
+        key = {i.id}
+        club_name={i.club_name}
+        description={i.club_description}
+        tag = {i.club_tags}
+        leader = {i.leader.first_name + " "+i.leader.last_name}
+        logo = {i.leader.logo}
+      />
+    )); 
+}
 class ClubList extends React.Component {
+  state={
+    isLoading : false,
+    data:[],
+    isError: false
+  }
+
+  async componentDidMount () {
+    try{
+      let response = await fetch('https://bileventsapp.herokuapp.com/viewset/clubs/');
+
+      if(null === response || undefined === response){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: false
+        })
+        return;
+      }
+
+      let jsonData = await response.json();
+
+      if(null === jsonData || undefined === jsonData ){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: true
+        })
+      }
+      this.setState({
+        isLoading : false,
+        data:jsonData,
+        isError: false
+      })
+    }catch(err){
+      this.state={
+        isLoading : false,
+        data:[],
+        isError: false
+      }
+      console.error(error);
+    }
+  }
   render(){
     return (
       <View style={styles.container}>
@@ -28,16 +91,10 @@ class ClubList extends React.Component {
         <View style={styles.dividerStack}>
           <Divider style={styles.divider}></Divider>
           <View style={styles.scrollArea}>
-            <ScrollView
-              horizontal={false}
-              contentContainerStyle={styles.scrollArea_contentContainerStyle}
-            >   
-            <ClubComponent></ClubComponent>   
-            <ClubComponent></ClubComponent>  
-            <ClubComponent></ClubComponent>  
-            <ClubComponent></ClubComponent>  
-            <ClubComponent></ClubComponent>
-            <ClubComponent></ClubComponent>            
+            <ScrollView horizontal={false} contentContainerStyle={styles.scrollArea_contentContainerStyle} >   
+
+              {setPostComponents(this.state)} 
+
             </ScrollView>
           </View>
         </View>

@@ -9,7 +9,7 @@ function PostComponent(props){
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
         <Image
-          source={require("../assets/IEEE.jpg")}
+          source={(props.logo)}
           resizeMode="contain"
           style={styles.image}
         ></Image>
@@ -19,7 +19,7 @@ function PostComponent(props){
           </View>
           <View style={styles.loremIpsumRow}>
             <Text style={styles.loremIpsum}>{props.dateTime}</Text>
-            <Text style={styles.loremIpsum4}> - {props.postAgo}</Text>
+            <Text style={styles.loremIpsum4}>•{props.postAgo}</Text>
           </View>
         </View>
       </View>

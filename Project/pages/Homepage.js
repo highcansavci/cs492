@@ -8,37 +8,86 @@ import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 
 function myFunction(datetime) {
-  date = new Date(datetime);
-  now = new Date();
+  var date = new Date(datetime);
+  var now = new Date();
   var ms = now - date;
-  days = Math.floor(ms / (24 * 60 * 60 * 1000));
-  daysms=ms % (24 * 60 * 60 * 1000);
-  hours = Math.floor((daysms)/(60 * 60 * 1000));
+  var days = Math.floor(ms / (24 * 60 * 60 * 1000));
+  var daysms=ms % (24 * 60 * 60 * 1000);
+  var hours = Math.floor((daysms)/(60 * 60 * 1000));
   return days+"d "+hours+"h";
 }
+const setPostComponents = (stateData) => {
+  if(null == stateData || undefined == stateData)
+    return;
 
+  if(stateData.isLoading)
+    return (<Text>Loaging.....</Text>)
+
+  else if(stateData.isError)
+    return (<Text>An error has occured!</Text>)
+
+  else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
+    return stateData.data.map(i => (
+      <PostComponent
+        key = {i.id}
+        clubName={i.club.club_name}
+        dateTime={i.event_time}
+        postAgo={myFunction(i.event_time)}
+        eventName={i.event_name}
+        time={i.event_time}
+        place={i.event_place}
+        capacity={i.event_max_capacity}
+        gePoints={i.event_points}
+        logo = {i.club.logo}
+      />
+    )); 
+}
 
 class Homepage extends React.Component {
-state= {
-  data:[],
-  posts:,
-}
-  async getComponent(){
-
-   const response = await fetch("https://bileventsapp.herokuapp.com/viewset/events/");
-   const data = await response.json();
-   this.state.data = data;
-   console.log(data);
-
-   /*
-   {this.state.data.map(i => {
-              
-    <PostComponent clubName= {i.club_name} dateTime={date} postAgo={myFunction(i.event_time)} eventName={i.event_name} time={time} place ={i.event_place}  capacity={i.event_max_capacity} gePoints={i.event_points}></PostComponent>
-   })}
-   */
+  state={
+    isLoading : false,
+    data:[],
+    isError: false
   }
-  render(){
 
+  async componentDidMount () {
+    try{
+      let response = await fetch('https://bileventsapp.herokuapp.com/viewset/events/');
+
+      if(null === response || undefined === response){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: false
+        })
+        return;
+      }
+
+      let jsonData = await response.json();
+
+      if(null === jsonData || undefined === jsonData ){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: true
+        })
+      }
+      this.setState({
+        isLoading : false,
+        data:jsonData,
+        isError: false
+      })
+    }catch(err){
+      this.state={
+        isLoading : false,
+        data:[],
+        isError: false
+      }
+      console.error(error);
+    }
+  }
+
+  render(){
     return (
       <View style={styles.container}>
         <StatusBar
@@ -68,7 +117,7 @@ state= {
           <Divider style={styles.divider}></Divider>
           <View style={styles.scrollArea}>
             <ScrollView horizontal={false} contentContainerStyle={styles.scrollArea_contentContainerStyle}> 
-            {this.getComponent()}
+            {setPostComponents(this.state)}
 
             </ScrollView>
           </View>
