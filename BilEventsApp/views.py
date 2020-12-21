@@ -17,7 +17,6 @@ class ParticipantViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated | IsAdminUser]
     lookup_field = 'bilkent_id'
 
-
 class LoginView(APIView):
     authentication_classes = ()
     permission_classes = ()

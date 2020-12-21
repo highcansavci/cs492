@@ -8,7 +8,7 @@ class Participant(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.CharField(unique = True, max_length=50)
-    pp = models.ImageField(upload_to="images/", null=True, blank=True)
+    pp = models.ImageField(upload_to="../staticfiles/rest_framework/img", null=True, blank=True)
     password = models.CharField(max_length=50)
 
     class Meta:
@@ -23,7 +23,7 @@ class Club(models.Model):
     club_name = models.CharField(max_length=50, unique=True)
     club_description = models.TextField()
     club_tags = models.CharField(max_length=200)
-    logo = models.ImageField(upload_to="images/", null=True, blank=True)
+    logo = models.ImageField(upload_to="../staticfiles/rest_framework/img", null=True, blank=True)
     leader = models.OneToOneField(
         Participant,
         on_delete=models.CASCADE,
@@ -71,7 +71,7 @@ class RecommendedEvent(models.Model):
     event_description = models.TextField(default="")
     event_tags = models.CharField(max_length=200)
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)
-    club = models.ForeignKey(Club, blank=True, null=True, on_delete=models.CASCADE)
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
     user = models.ForeignKey(Participant, on_delete=models.CASCADE)
     class Meta:
         ordering = ('event_time',)
