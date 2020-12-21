@@ -8,7 +8,6 @@ class Participant(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.CharField(unique = True, max_length=50)
-    pp = models.ImageField(upload_to="../staticfiles/rest_framework/img", null=True, blank=True)
     password = models.CharField(max_length=50)
 
     class Meta:
@@ -23,7 +22,7 @@ class Club(models.Model):
     club_name = models.CharField(max_length=50, unique=True)
     club_description = models.TextField()
     club_tags = models.CharField(max_length=200)
-    logo = models.ImageField(upload_to="../staticfiles/rest_framework/img", null=True, blank=True)
+    logo = models.URLField(max_length=200, blank=True, null=True)
     leader = models.OneToOneField(
         Participant,
         on_delete=models.CASCADE,
