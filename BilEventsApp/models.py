@@ -1,6 +1,9 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db.models import Count
+from django.utils import timezone
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext as _
 # Create your models here.
 
 class Participant(models.Model):
@@ -27,7 +30,7 @@ class Club(models.Model):
         Participant,
         on_delete=models.CASCADE,
     )
-    participants = models.ManyToManyField(Participant, related_name='club_participants')
+    club_members = models.ManyToManyField(Participant, blank=True, null=True, related_name='club_members')
 
     class Meta:
         ordering = ('club_name',)
@@ -36,7 +39,7 @@ class Club(models.Model):
     def __str__(self):
         return self.club_name
 
-class Event(models.Model):
+class EventInfo(models.Model):
     event_name = models.CharField(unique=True, max_length=50)
     event_place = models.TextField()
     event_time = models.DateTimeField()
@@ -44,13 +47,21 @@ class Event(models.Model):
     event_max_capacity = models.PositiveIntegerField(default=0)
     event_description = models.TextField(default="")
     event_tags = models.CharField(max_length=200)
-    event_zoom_link = models.URLField(max_length=200, blank=True, null=True)
-    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
-    club = models.ForeignKey(Club, blank=True, null=True, on_delete=models.CASCADE)
+    event_zoom_link = models.URLField(max_length=200, blank=True, null=True)  
+    club = models.ForeignKey(Club, on_delete=models.CASCADE)
     event_current_capacity = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        abstract = True
+
+class Event(EventInfo):
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
+    event_score = models.PositiveIntegerField(default=3,
+        validators=[
+            MaxValueValidator(5),
+            MinValueValidator(1)
+        ])
     def save(self, *args, **kwargs):
-        print(Participant.objects.all().annotate(event_count=models.Count('event_participants')).count())
         self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
         super().save(*args, **kwargs)
 
@@ -61,21 +72,13 @@ class Event(models.Model):
     def __str__(self):
         return self.event_name
 
-class RecommendedEvent(models.Model):
-    event_name = models.CharField(unique=True, max_length=50)
-    event_place = models.TextField()
-    event_points = models.PositiveIntegerField(default=0)
-    event_time = models.DateTimeField()
-    event_max_capacity = models.PositiveIntegerField(default=0)
-    event_description = models.TextField(default="")
-    event_tags = models.CharField(max_length=200)
-    event_zoom_link = models.URLField(max_length=200, blank=True, null=True)
-    club = models.ForeignKey(Club, on_delete=models.CASCADE)
-    user = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    class Meta:
-        ordering = ('event_time',)
-        unique_together = ('event_name',)
-        
-    def __str__(self):
-        return self.event_name
 
+class RecommendedEvent(EventInfo):
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='recevent_participants')
+    users = models.ManyToManyField(Participant, blank=True, null=True, related_name='recommended_users')
+    def save(self, *args, **kwargs):
+        if timezone.now() < self.event_time:
+            self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
+            super().save(*args, **kwargs)
+        else:
+            raise ValidationError(_('Cannot recommend the past event'), code='past')
