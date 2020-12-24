@@ -1,17 +1,25 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Image, Text,TouchableHighlight } from "react-native";
+import { StyleSheet, View, Image,Alert , Text,TouchableHighlight } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
+const createAlert = (title,msg) =>
+    Alert.alert(
+      title,
+      msg,
+      [
+        { text: "OK" }
+      ]
+    );
+
+function propsDescription(input){
+  return <Text style={ styles.descript }> {input} </Text>;
+}
 
 function ClubComponent(props) {
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
-        <Image
-          source={(props.logo)}
-          resizeMode="contain"
-          style={styles.image}
-        ></Image>
+        <Image source={{ uri:props.logo}} resizeMode="contain" style={styles.image}></Image>
         <View style={styles.ieeeStackColumn}>
           <View style={styles.ieeeStack}>
             <Text style={styles.ieee}>{props.club_name}</Text>
@@ -22,8 +30,10 @@ function ClubComponent(props) {
         <Text style={styles.event}></Text>
         <Text style={styles.event8}>Club Leader : {props.leader}</Text>
       </View>
-      <Text style={styles.time}>Description :  {props.description}</Text>
-      <Text style={styles.capacity}>Tags :  {props.tag}</Text>
+      <View>
+        <Text style={styles.time} onPress={()=> createAlert("Description",props.description)}>Description :{ propsDescription(props.description)}</Text>
+      </View>
+      <Text style={styles.capacity} >Tags :  {props.tag}</Text>
       <View style={styles.iconRow}>
         <TouchableHighlight onPress={()=>console.log("Join")}>
             <View>
@@ -133,11 +143,15 @@ const styles = StyleSheet.create({
     marginLeft: 8
   },
   time: {
-    color: "rgba(255,255,255,1)",
+    color: "#ebde34",
     height: 19,
     width: 302,
     marginTop: 5,
-    marginLeft: 8
+    marginLeft: 8,
+  },
+  descript:
+  {
+    color:"white"
   },
   place: {
     color: "rgba(255,255,255,1)",

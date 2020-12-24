@@ -3,13 +3,24 @@ import { StyleSheet, View, Image, Text,TouchableHighlight } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
 
+function checkingGEPoints(point){
+  if(point ==0)
+    return "No Points Will Be Given"
+  else
+    return point
+}
+function checkingCapacity(point){
+  if(point ==0)
+    return "No Limit"
+  else
+    return point
+}
 function PostComponent(props){
-
     return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
         <Image
-          source={(props.logo)}
+          source={{ uri:props.logo}}
           resizeMode="contain"
           style={styles.image}
         ></Image>
@@ -19,7 +30,7 @@ function PostComponent(props){
           </View>
           <View style={styles.loremIpsumRow}>
             <Text style={styles.loremIpsum}>{props.dateTime}</Text>
-            <Text style={styles.loremIpsum4}>•{props.postAgo}</Text>
+            <Text style={styles.loremIpsum4}>• {props.postAgo}</Text>
           </View>
         </View>
       </View>
@@ -29,8 +40,8 @@ function PostComponent(props){
       </View>
       <Text style={styles.time}>Time : {props.time}</Text>
       <Text style={styles.place}>Place : {props.place}</Text>
-      <Text style={styles.capacity}>Capacity : {props.capacity}</Text>
-      <Text style={styles.ge250251Points}>GE 250/251 Points : {props.gePoints}</Text>
+      <Text style={styles.capacity}>Capacity : {checkingCapacity(props.capacity)}</Text>
+      <Text style={styles.ge250251Points}>GE 250/251 Points : {checkingGEPoints(props.gePoints)}</Text>
       <View style={styles.iconRow}>
         <TouchableHighlight onPress={()=>console.log("Join")}>
             <View>

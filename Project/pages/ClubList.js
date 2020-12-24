@@ -25,7 +25,7 @@ const setPostComponents = (stateData) => {
         description={i.club_description}
         tag = {i.club_tags}
         leader = {i.leader.first_name + " "+i.leader.last_name}
-        logo = {i.leader.logo}
+        logo = {i.logo}
       />
     )); 
 }

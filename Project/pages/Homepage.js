@@ -6,15 +6,22 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
+import DropDownPicker from 'react-native-dropdown-picker';
+
 
 function myFunction(datetime) {
   var date = new Date(datetime);
   var now = new Date();
   var ms = now - date;
-  var days = Math.floor(ms / (24 * 60 * 60 * 1000));
+  var days = -1 * Math.floor(ms / (24 * 60 * 60 * 1000));
   var daysms=ms % (24 * 60 * 60 * 1000);
   var hours = Math.floor((daysms)/(60 * 60 * 1000));
   return days+"d "+hours+"h";
+}
+
+function fixData(date){
+  date = date.substring(8,10)+ "."+date.substring(5,7)+"."+date.substring(0,4)
+  return date;
 }
 const setPostComponents = (stateData) => {
   if(null == stateData || undefined == stateData)
@@ -31,10 +38,10 @@ const setPostComponents = (stateData) => {
       <PostComponent
         key = {i.id}
         clubName={i.club.club_name}
-        dateTime={i.event_time}
+        dateTime={fixData(i.event_time.substring(0,10))}
         postAgo={myFunction(i.event_time)}
         eventName={i.event_name}
-        time={i.event_time}
+        time={i.event_time.substring(11,16)}
         place={i.event_place}
         capacity={i.event_max_capacity}
         gePoints={i.event_points}
@@ -47,7 +54,8 @@ class Homepage extends React.Component {
   state={
     isLoading : false,
     data:[],
-    isError: false
+    isError: false,
+    select:'IN A WEEK'
   }
 
   async componentDidMount () {
@@ -101,15 +109,25 @@ class Homepage extends React.Component {
             <View style={styles.layoutOptions}>
               <View style={styles.rect}></View>
               <View style={styles.rect2}></View>
-              <MaterialCommunityIconsIcon
-                name="feature-search-outline"
-                style={styles.bestPostIcon}
-              ></MaterialCommunityIconsIcon>
+              <MaterialCommunityIconsIcon name="feature-search-outline" style={styles.bestPostIcon} ></MaterialCommunityIconsIcon>
               <Text style={styles.inAWeek}>IN A WEEK</Text>
-              <IoniconsIcon
-                name="md-arrow-dropdown"
-                style={styles.dropdownIcon}
-              ></IoniconsIcon>
+              
+              {/*<DropDownPicker 
+                  items={[         
+                    {label: 'IN A WEEK', value: 'week'},
+                    {label: 'IN A MONTH', value: 'month'},                    
+                    {label: 'IN A SMSTR', value: 'semester'},
+                  ]}
+                  defaultValue={this.state.select}
+                  containerStyle={{height: 40, width: 150}}
+                  style={{backgroundColor: '#fafafa', marginBottom: 10}}
+                  itemStyle={{justifyContent: 'flex-start'}}
+                  dropDownStyle={{backgroundColor: '#fafafa'}}
+                  onChangeItem={item => this.setState({select: item.value })} 
+                >
+              </DropDownPicker>*/}
+              
+              <IoniconsIcon name="md-arrow-dropdown" style={styles.dropdownIcon} onPress={()=>console.log("week")}></IoniconsIcon>
             </View>
           </View>
         </View>

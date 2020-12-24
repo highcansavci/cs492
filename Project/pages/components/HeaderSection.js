@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { StyleSheet, View, TextInput,TouchableHighlight } from "react-native";
 import Icon from "react-native-vector-icons/EvilIcons";
 
+
 function HeaderSection(props) {
   return (
     <View style={[styles.container, props.style]}>

@@ -6,19 +6,26 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from '@react-navigation/native';
 import EntypoIcon from "react-native-vector-icons/Entypo";
 
+
+function checkLeader(leader){
+  if (leader) {
+    <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('AddEventPage')}  >
+        <MaterialCommunityIconsIcon name="plus" style={styles.icon7}></MaterialCommunityIconsIcon>
+    </TouchableOpacity>
+  }
+}
 function Footer(props) {
   const navigation = useNavigation();
   return (
-    
     <View style={[styles.container, styles.property]}>
-      <TouchableOpacity style={styles.button3} onPress={() => navigation.navigate('Homepage')}>
+      <TouchableOpacity style={styles.button3} onPress={() => { navigation.navigate('Homepage')}}>
         <MaterialCommunityIconsIcon name="home" style={styles.icon3}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('SelectedEvents')} >
+      <TouchableOpacity style={styles.button2} onPress={() => { navigation.navigate('SelectedEvents')}} >
         <MaterialCommunityIconsIcon name="heart" style={styles.icon6}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
-
+      
       <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('RecommendedEvents')}  >
         <MaterialCommunityIconsIcon name="checkbox-multiple-marked-outline" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
@@ -26,6 +33,9 @@ function Footer(props) {
       <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('ClubList')}>
         <IoniconsIcon name="logo-github" style={styles.icon4}></IoniconsIcon>
       </TouchableOpacity>
+
+      {checkLeader(props.leader)}
+
       <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('Login')}>
         <EntypoIcon name="log-out" style={styles.icon8}></EntypoIcon>
       </TouchableOpacity>
