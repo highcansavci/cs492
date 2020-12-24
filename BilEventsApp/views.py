@@ -66,21 +66,58 @@ class EventViewSet(viewsets.ModelViewSet):
     serializer_class = EventMainSerializer
     lookup_field = 'event_name'
 
+
 class EventParticipantsView(APIView):
     authentication_classes = ()
     permission_classes = ()
-    @staticmethod
-    def get(request):
+
+    def get(self, request):
         event = get_object_or_404(Event, event_name=request.GET['event_name'])
         serializer = EventParticipantSerializer(event)
         return Response(serializer.data)
+
+    def post(self, request):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        participant_list = [participant.bilkent_id for participant in event.participants.all()]
+        if type(request.data['participants']) == int:
+            participant_list.append(request.data['participants'])
+        elif type(request.data['participants']) == list:
+            participant_list.extend(request.data['participants'])
+        request.data['participants'] = participant_list
+        serializer = EventParticipantSerializer(event, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if type(request.data['participants']) == int:
+            participant_list = [participant.bilkent_id for participant in event.participants.all() if request.data['participants'] != participant.bilkent_id]
+        elif type(request.data['participants']) == list:
+            participant_list = [participant.bilkent_id for participant in event.participants.all() if not(participant.bilkent_id  in request.data['participants'])]
+        request.data['participants'] = participant_list
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SelectedEventsView(APIView):
     authentication_classes = ()
     permission_classes = ()
     @staticmethod
-    def get(request):
-        participant = get_object_or_404(Participant, bilkent_id=request.GET['bilkent_id'])
+    def get(request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
         selected_events = participant.event_participants.all()
         serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
@@ -94,16 +131,18 @@ class RecommendedEventParticipantsView(APIView):
     authentication_classes = ()
     permission_classes = ()
     @staticmethod
-    def get(request):
-        recommended_event = get_object_or_404(RecommendedEvent, event_name=request.GET['event_name'])
-        serializer = RecommendedEventParticipantSerializer(recommended_event)
+    def get(request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        recommended_events = participant.recevent_participants.all()
+        serializer = RecommendedEventMainSerializer(recommended_events, many=True)
         return Response(serializer.data)
 
 class RecommendedEventUsersView(APIView):
     authentication_classes = ()
     permission_classes = ()
     @staticmethod
-    def get(request):
-        recommended_event = get_object_or_404(RecommendedEvent, event_name=request.GET['event_name'])
-        serializer = RecommendedEventUserSerializer(recommended_event)
+    def get(request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        recommended_events = participant.recommended_users.all()
+        serializer = RecommendedEventMainSerializer(recommended_events, many=True)
         return Response(serializer.data)

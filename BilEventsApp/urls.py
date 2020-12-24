@@ -19,7 +19,7 @@ urlpatterns = [
     path(r'auth/register', RegisterView.as_view()),
     path(r'club/members', ClubMembersView.as_view()),
     path(r'event/participants', EventParticipantsView.as_view()),
-    path(r'recommendedevent/participants', RecommendedEventParticipantsView.as_view()),
-    path(r'recommendedevent/users', RecommendedEventUsersView.as_view()),
-    path(r'participants/selected_events', SelectedEventsView.as_view())
+    path(r'viewset/participants/<pk>/recommended_events', RecommendedEventParticipantsView.as_view()),
+    path(r'viewset/users/<pk>/recommended_events', RecommendedEventUsersView.as_view()),
+    path(r'viewset/participants/<pk>/selected_events', SelectedEventsView.as_view())
 ]
