@@ -56,14 +56,17 @@ class EventInfo(models.Model):
 
 class Event(EventInfo):
     participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
-    event_score = models.PositiveIntegerField(default=3,
+    event_score = models.PositiveIntegerField(default=0,
         validators=[
             MaxValueValidator(5),
             MinValueValidator(1)
         ])
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs): 
         self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
-        super().save(*args, **kwargs)
+        if self.event_current_capacity < self.event_max_capacity:
+            super().save(*args, **kwargs)
+        else:
+            raise ValidationError(_('Cannot exceed the maximum capacity'), code='max')
 
     class Meta:
         ordering = ('event_time',)
@@ -79,6 +82,9 @@ class RecommendedEvent(EventInfo):
     def save(self, *args, **kwargs):
         if timezone.now() < self.event_time:
             self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
-            super().save(*args, **kwargs)
+            if self.event_current_capacity < self.event_max_capacity:
+                super().save(*args, **kwargs)
+            else:
+                raise ValidationError(_('Cannot exceed the maximum capacity'), code='max')
         else:
             raise ValidationError(_('Cannot recommend the past event'), code='past')

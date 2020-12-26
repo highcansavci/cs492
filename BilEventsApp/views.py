@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from django.core.exceptions import SuspiciousOperation
+from django.utils import timezone
 
 
 # Create your views here.
@@ -59,6 +60,16 @@ class ClubMembersView(APIView):
     def get(request):
         club = get_object_or_404(Club, club_name=request.GET['club_name'])
         serializer = ClubMemberSerializer(club)
+        return Response(serializer.data)
+
+
+class ClubLeaderView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    def get(self, request, pk):
+        leader = get_object_or_404(Participant, bilkent_id=pk)
+        club = leader.club
+        serializer = ClubMainSerializer(club)
         return Response(serializer.data)
 
 class EventViewSet(viewsets.ModelViewSet):
@@ -117,6 +128,28 @@ class SelectedEventsView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+
+class PastEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        selected_events = participant.event_participants.filter(event_time__lt=timezone.now())
+        serializer = EventMainSerializer(selected_events, many=True)
+        return Response(serializer.data)
+    
+    def put(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now() and event.event_score == 0:
+            serializer = EventMainSerializer(event, data=request.data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
 
 class RecommendedEventViewSet(viewsets.ModelViewSet):
     queryset = RecommendedEvent.objects.all()

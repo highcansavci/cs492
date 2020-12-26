@@ -73,7 +73,7 @@ class EventSerializer(PatchModelSerializer):
     class Meta:
         model = Event
         fields = '__all__'
-    
+
 
 class EventMainSerializer(EventSerializer):
     class Meta:
