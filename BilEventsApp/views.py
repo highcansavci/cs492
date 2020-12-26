@@ -93,6 +93,8 @@ class SelectedEventsView(APIView):
         participant = int(pk)
         if not(participant in participant_list):
             participant_list.append(participant)
+        else:
+            return Response(status=status.HTTP_409_CONFLICT)
         request.data['participants'] = participant_list
         serializer = EventParticipantSerializer(event, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
@@ -106,6 +108,8 @@ class SelectedEventsView(APIView):
         participant = int(pk)
         if participant in participant_list:
             participant_list.remove(participant)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         request.data['participants'] = participant_list
         serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -145,6 +149,8 @@ class RecommendedEventParticipantsView(APIView):
         participant = int(pk)
         if not(participant in participant_list):
             participant_list.append(participant)
+        else:
+            return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
         request.data['participants'] = participant_list
         serializer = RecommendedEventParticipantSerializer(recevent, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
@@ -158,6 +164,8 @@ class RecommendedEventParticipantsView(APIView):
         participant = int(pk)
         if participant in participant_list:
             participant_list.remove(participant)
+        else:
+            return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
         request.data['participants'] = participant_list
         serializer = RecommendedEventParticipantSerializer(recevent, data=request.data)
         if serializer.is_valid(raise_exception=True):
