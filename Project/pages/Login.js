@@ -26,7 +26,7 @@ export default class Login extends React.Component {
     const data = await response.json();
 
     if(data.bilkent_id == bilkent_id && data.password == password){
-      this.props.navigation.navigate('Homepage')
+      this.props.navigation.navigate('Homepage',{userID: bilkent_id})
     }
     else{
       alert("Wrong ID or Password");

@@ -6,10 +6,102 @@ import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
+import DropDownPicker from 'react-native-dropdown-picker';
+
+function myFunction(datetime) {
+  var date = new Date(datetime);
+  var now = new Date();
+  var ms = now - date;
+  var days = -1 * Math.floor(ms / (24 * 60 * 60 * 1000));
+  var daysms=ms % (24 * 60 * 60 * 1000);
+  var hours = Math.floor((daysms)/(60 * 60 * 1000));
+  return days+"d "+hours+"h";
+}
+
+function fixData(date){
+  date = date.substring(8,10)+ "."+date.substring(5,7)+"."+date.substring(0,4)
+  return date;
+}
+const setPostComponents = (id,stateData) => {
+  if(null == stateData || undefined == stateData)
+    return <Text>There is no selected event.</Text>;
+
+  if(stateData.isLoading)
+    return (<Text>Loading.....</Text>)
+
+  else if(stateData.isError)
+    return (<Text>An error has occured!</Text>)
+
+  else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
+    return stateData.data.map(i => (
+      <PostComponent
+        key = {i.id}
+        clubName={i.club.club_name}
+        dateTime={fixData(i.event_time.substring(0,10))}
+        postAgo={myFunction(i.event_time)}
+        eventName={i.event_name}
+        time={i.event_time.substring(11,16)}
+        place={i.event_place}
+        capacity={i.event_max_capacity}
+        gePoints={i.event_points}
+        logo = {i.club.logo}
+        eventPage = "selectedEvents"
+        participantID = {id}
+      />
+    ));
+  else
+    return (<Text >There is no selected event.</Text>);
+}
 
 class SelectedEvents extends React.Component {
+  state={
+    isLoading : false,
+    data:[],
+    isError: false,
+    select:'',
+  }
+  
+  async componentDidMount () {    
+    try{
+      const url = "https://bileventsapp.herokuapp.com/viewset/participants/"+this.props.route.params.userID+"/selected_events"; 
+      let response = await fetch(url);
+
+      if(null === response || undefined === response){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: false
+        })
+        return;
+      }
+
+      let jsonData = await response.json();
+
+      if(null === jsonData || undefined === jsonData ){
+        this.setState({
+          isLoading : false,
+          data:[],
+          isError: true
+        })
+      }
+      this.setState({
+        isLoading : false,
+        data:jsonData,
+        isError: false
+      })
+    }catch(err){
+      this.state={
+        isLoading : false,
+        data:[],
+        isError: false
+      }
+      console.error(error);
+    }
+  }
+
   render(){
-    return (
+    return ( 
+        
       <View style={styles.container}>
         <StatusBar
           animated
@@ -22,35 +114,33 @@ class SelectedEvents extends React.Component {
             <View style={styles.layoutOptions}>
               <View style={styles.rect}></View>
               <View style={styles.rect2}></View>
-              <MaterialCommunityIconsIcon
-                name="feature-search-outline"
-                style={styles.bestPostIcon}
-              ></MaterialCommunityIconsIcon>
-              <Text style={styles.inAWeek}>IN A WEEK</Text>
-              <IoniconsIcon
-                name="md-arrow-dropdown"
-                style={styles.dropdownIcon}
-              ></IoniconsIcon>
+                   
+              <DropDownPicker 
+                  items={[         
+                    {label: 'IN A WEEK', value: 'week', selected: true},
+                    {label: 'IN A MONTH', value: 'month'},                    
+                    {label: 'IN A SEMESTER', value: 'semester'},
+                  ]}
+                  containerStyle={{height: '100%', width: '90%'}}
+                  style={{backgroundColor: '#fafafa', marginBottom: 10}}
+                  itemStyle={{justifyContent: 'flex-start'}}
+                  dropDownStyle={{backgroundColor: '#fafafa'}}
+                  onChangeItem={item => this.setState({select: item.value })} 
+                >
+              </DropDownPicker>
+              
             </View>
           </View>
         </View>
         <View style={styles.dividerStack}>
           <Divider style={styles.divider}></Divider>
           <View style={styles.scrollArea}>
-            <ScrollView
-              horizontal={false}
-              contentContainerStyle={styles.scrollArea_contentContainerStyle}
-            >   
-            <PostComponent></PostComponent>   
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>  
-            <PostComponent></PostComponent>
-            <PostComponent></PostComponent>            
+            <ScrollView horizontal={false} contentContainerStyle={styles.scrollArea_contentContainerStyle}> 
+            {setPostComponents(this.props.route.params.userID,this.state)}
             </ScrollView>
           </View>
         </View>
-        <Footer ></Footer>
+        <Footer bilkent_id={this.props.route.params.userID}></Footer>
       </View>
     );
   }

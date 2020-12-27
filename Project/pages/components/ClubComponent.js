@@ -35,21 +35,7 @@ function ClubComponent(props) {
       </View>
       <Text style={styles.capacity} >Tags :  {props.tag}</Text>
       <View style={styles.iconRow}>
-        <TouchableHighlight onPress={()=>console.log("Join")}>
-            <View>
-              <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
-            </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={()=>console.log("Leave")}>
-          <View>
-            <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={()=>console.log("Share")}>
-          <View>
-            <EvilIconsIcon name="share-google" style={styles.icon3}></EvilIconsIcon>
-          </View>
-        </TouchableHighlight>
+        
       </View>
     </View>
   );

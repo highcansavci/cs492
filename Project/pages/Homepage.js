@@ -8,7 +8,6 @@ import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
 import DropDownPicker from 'react-native-dropdown-picker';
 
-
 function myFunction(datetime) {
   var date = new Date(datetime);
   var now = new Date();
@@ -23,7 +22,7 @@ function fixData(date){
   date = date.substring(8,10)+ "."+date.substring(5,7)+"."+date.substring(0,4)
   return date;
 }
-const setPostComponents = (stateData) => {
+const setPostComponents = (id,stateData) => {
   if(null == stateData || undefined == stateData)
     return;
 
@@ -46,8 +45,11 @@ const setPostComponents = (stateData) => {
         capacity={i.event_max_capacity}
         gePoints={i.event_points}
         logo = {i.club.logo}
+        eventPage = "upcomingEvents"
+        participantID = {id}
       />
-    )); 
+    ));
+     
 }
 
 class Homepage extends React.Component {
@@ -55,10 +57,10 @@ class Homepage extends React.Component {
     isLoading : false,
     data:[],
     isError: false,
-    select:'IN A WEEK'
+    select:'',
   }
-
-  async componentDidMount () {
+  
+  async componentDidMount () {    
     try{
       let response = await fetch('https://bileventsapp.herokuapp.com/viewset/events/');
 
@@ -96,7 +98,8 @@ class Homepage extends React.Component {
   }
 
   render(){
-    return (
+    return ( 
+        
       <View style={styles.container}>
         <StatusBar
           animated
@@ -109,25 +112,21 @@ class Homepage extends React.Component {
             <View style={styles.layoutOptions}>
               <View style={styles.rect}></View>
               <View style={styles.rect2}></View>
-              <MaterialCommunityIconsIcon name="feature-search-outline" style={styles.bestPostIcon} ></MaterialCommunityIconsIcon>
-              <Text style={styles.inAWeek}>IN A WEEK</Text>
-              
-              {/*<DropDownPicker 
+                   
+              <DropDownPicker 
                   items={[         
-                    {label: 'IN A WEEK', value: 'week'},
+                    {label: 'IN A WEEK', value: 'week', selected: true},
                     {label: 'IN A MONTH', value: 'month'},                    
-                    {label: 'IN A SMSTR', value: 'semester'},
+                    {label: 'IN A SEMESTER', value: 'semester'},
                   ]}
-                  defaultValue={this.state.select}
-                  containerStyle={{height: 40, width: 150}}
+                  containerStyle={{height: '100%', width: '90%'}}
                   style={{backgroundColor: '#fafafa', marginBottom: 10}}
                   itemStyle={{justifyContent: 'flex-start'}}
                   dropDownStyle={{backgroundColor: '#fafafa'}}
                   onChangeItem={item => this.setState({select: item.value })} 
                 >
-              </DropDownPicker>*/}
+              </DropDownPicker>
               
-              <IoniconsIcon name="md-arrow-dropdown" style={styles.dropdownIcon} onPress={()=>console.log("week")}></IoniconsIcon>
             </View>
           </View>
         </View>
@@ -135,12 +134,11 @@ class Homepage extends React.Component {
           <Divider style={styles.divider}></Divider>
           <View style={styles.scrollArea}>
             <ScrollView horizontal={false} contentContainerStyle={styles.scrollArea_contentContainerStyle}> 
-            {setPostComponents(this.state)}
-
+            {setPostComponents(this.props.route.params.userID,this.state)}
             </ScrollView>
           </View>
         </View>
-        <Footer></Footer>
+        <Footer bilkent_id={this.props.route.params.userID}></Footer>
       </View>
     );
   }

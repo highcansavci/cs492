@@ -15,6 +15,7 @@ function NavStack() {
   return (
     
      <Stack.Navigator
+     
         initialRouteName="Login"
         screenOptions={{
           headerTitleAlign: 'center',
@@ -36,6 +37,7 @@ function NavStack() {
         name="Signup" 
         component={Signup} 
         options={{ title: 'Signup' }}
+
       />
       <Stack.Screen 
         name="ForgotPassword" 
@@ -45,22 +47,22 @@ function NavStack() {
        <Stack.Screen 
         name="Homepage" 
         component={Homepage} 
-        options={{ title: 'Upcoming Events' }}
+        options={{ title: 'Upcoming Events' }}      
       />
       <Stack.Screen 
         name="SelectedEvents" 
         component={SelectedEvents} 
-        options={{ title: 'Selected Events' }}
+        options={{ title: 'Selected Events' }}      
       />
       <Stack.Screen 
         name="RecommendedEvents" 
         component={RecommendedEvents} 
-        options={{ title: 'Recommended Events' }}
+        options={{ title: 'Recommended Events' }}   
       />
       <Stack.Screen 
         name="ClubList" 
         component={ClubList} 
-        options={{ title: 'Club List' }}
+        options={{ title: 'Club List' }}     
       />
     </Stack.Navigator>
   );

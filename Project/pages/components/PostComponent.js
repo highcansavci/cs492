@@ -15,7 +15,80 @@ function checkingCapacity(point){
   else
     return point
 }
+async function joinEvent(bilkent_id,eventName) { 
+  const url = "https://bileventsapp.herokuapp.com/viewset/participants/"+bilkent_id+"/selected_events";
+  const response = await fetch(url, { 
+    method: "PUT", 
+    headers: { 
+      'Accept': 'application/json', 
+      'Content-Type': 'application/json' 
+    },
+    body: JSON.stringify({ 
+      event_name: eventName
+    }) 
+  });
+  if(response.status == "400")
+  {
+    alert("Unsuccessful");
+  }
+  else if(response.status == "409"){
+    alert("You have already added that event." );
+  }
+  else{
+    alert("Added Successfully" );
+  }
+}
+
+async function leaveEvent(bilkent_id,eventName){
+  const url = "https://bileventsapp.herokuapp.com/viewset/participants/"+bilkent_id+"/selected_events";
+  const response = await fetch(url, { 
+    method: "DELETE", 
+    headers: { 
+      'Accept': 'application/json', 
+      'Content-Type': 'application/json' 
+    },
+    body: JSON.stringify({ 
+      event_name: eventName
+    }) 
+  });
+  if(response.status == "400")
+  {
+    alert("Unsuccessful");
+  }
+  if(response.status == "404")
+  {
+    return;
+  }
+  else{
+    alert("Deleted Successfully" );
+  }
+}
+function checkEventPage(eventPage,eventName,bilkent_id){
+  if(eventPage == "selectedEvents")
+    return <TouchableHighlight onPress={()=>leaveEvent(bilkent_id,eventName)}>
+            <View>
+              <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
+            </View>
+    </TouchableHighlight>
+
+  else if(eventPage == "upcomingEvents" || eventPage == "recommendedEvents" )
+    return <TouchableHighlight onPress={()=>joinEvent(bilkent_id,eventName)}>
+      <View>
+        <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
+      </View>
+    </TouchableHighlight>
+    
+  else if(eventPage == "pastEvents")
+  return <TouchableHighlight onPress={()=>joinEvent(bilkent_id,eventName)}>
+    <View>
+      <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
+    </View>
+  </TouchableHighlight>
+
+}
+
 function PostComponent(props){
+  
     return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
@@ -43,17 +116,8 @@ function PostComponent(props){
       <Text style={styles.capacity}>Capacity : {checkingCapacity(props.capacity)}</Text>
       <Text style={styles.ge250251Points}>GE 250/251 Points : {checkingGEPoints(props.gePoints)}</Text>
       <View style={styles.iconRow}>
-        <TouchableHighlight onPress={()=>console.log("Join")}>
-            <View>
-              <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
-            </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={()=>console.log("Leave")}>
-          <View>
-            <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
-          </View>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={()=>console.log("Share")}>
+        {checkEventPage(props.eventPage,props.eventName,props.participantID)}
+        <TouchableHighlight onPress={()=>console.log("share")}>
           <View>
             <EvilIconsIcon name="share-google" style={styles.icon3}></EvilIconsIcon>
           </View>
@@ -185,7 +249,7 @@ const styles = StyleSheet.create({
     marginTop: 7
   },
   icon2: {
-    color: "grey",
+    color: "red",
     fontSize: 27,
     marginLeft: 16,
     marginTop: 7
