@@ -1,6 +1,4 @@
-# cs492
+# cs492 - Bil-Events
 Graduation project
-
-Bil-Events
 
 Event Orginizer Mobile App
