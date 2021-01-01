@@ -122,7 +122,7 @@ class RecommendedEventMainSerializer(RecommendedEventSerializer):
 class RecommendedEventParticipantSerializer(RecommendedEventSerializer):
     class Meta:
         model = RecommendedEvent
-        fields = '__all__'
+        fields = ['participants', 'event_current_capacity']
 
     def to_representation(self, instance):
         data = super(RecommendedEventSerializer, self).to_representation(instance)
@@ -132,10 +132,6 @@ class RecommendedEventParticipantSerializer(RecommendedEventSerializer):
             participant = get_object_or_404(queryset, pk=pid)
             temp.append(CurrentParticipantSerializer(participant).data)
         data['participants'] = temp
-        temp = data.copy()
-        for key in temp.keys():
-            if key != "participants":
-                del data[key]
         return data
 
 class RecommendedEventUserSerializer(RecommendedEventSerializer):

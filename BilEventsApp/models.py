@@ -52,11 +52,12 @@ class EventInfo(models.Model):
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)  
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     event_current_capacity = models.PositiveIntegerField(default=0)
+    
     class Meta:
         abstract = True
 
 class Event(EventInfo):  
-    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participant')
     event_score = models.PositiveIntegerField(default=0,
         validators=[
             MaxValueValidator(5),
@@ -84,6 +85,7 @@ class Event(EventInfo):
 
 
 class RecommendedEvent(EventInfo):
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='recevent_participants')
     users = models.ManyToManyField(Participant, blank=True, null=True, related_name='recommended_users')
     def save(self, *args, **kwargs):
         if timezone.now() < self.event_time:
