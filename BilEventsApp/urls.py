@@ -1,6 +1,6 @@
 from django.urls import path, include
 from django.conf.urls import url
-from .views import ParticipantViewSet, ClubViewSet, EventViewSet, RecommendedEventViewSet, LoginView, RegisterView, ClubMembersView, RecommendedEventParticipantsView, RecommendedEventsView, SelectedEventsView, ClubLeaderView, PastEventsView
+from .views import ParticipantViewSet, ClubViewSet, EventViewSet, RecommendedEventViewSet, LoginView, RegisterView, ClubMembersView, RecommendedEventParticipantsView, RecommendedEventsView, SelectedEventsView, ClubLeaderView, PastEventsView, EventParticipantsView
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from django.conf.urls.static import static
 from django.conf import settings
@@ -18,6 +18,7 @@ urlpatterns = [
     path(r'auth/login', LoginView.as_view()),
     path(r'auth/register', RegisterView.as_view()),
     path(r'club/members', ClubMembersView.as_view()),
+    path(r'event/participants', EventParticipantsView.as_view()),
     path(r'viewset/participants/<pk>/recommended_events', RecommendedEventParticipantsView.as_view()),
     path(r'viewset/users/<pk>/recommended_events', RecommendedEventsView.as_view()),
     path(r'viewset/participants/<pk>/selected_events', SelectedEventsView.as_view()),

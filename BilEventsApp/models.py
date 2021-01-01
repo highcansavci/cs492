@@ -4,6 +4,8 @@ from django.db.models import Count
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext as _
+
+
 # Create your models here.
 
 class Participant(models.Model):
@@ -50,23 +52,28 @@ class EventInfo(models.Model):
     event_zoom_link = models.URLField(max_length=200, blank=True, null=True)  
     club = models.ForeignKey(Club, on_delete=models.CASCADE)
     event_current_capacity = models.PositiveIntegerField(default=0)
-
     class Meta:
         abstract = True
 
-class Event(EventInfo):
+class Event(EventInfo):  
     participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
     event_score = models.PositiveIntegerField(default=0,
         validators=[
             MaxValueValidator(5),
             MinValueValidator(1)
-        ])
+        ]
+    )
+
     def save(self, *args, **kwargs): 
-        self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
+        super().save(*args, **kwargs) 
         if self.event_current_capacity < self.event_max_capacity:
-            super().save(*args, **kwargs)
+            pass
         else:
             raise ValidationError(_('Cannot exceed the maximum capacity'), code='max')
+    
+    def participant_count(self):
+        self.event_current_capacity = self.participants.count()
+        self.save()
 
     class Meta:
         ordering = ('event_time',)
@@ -77,11 +84,9 @@ class Event(EventInfo):
 
 
 class RecommendedEvent(EventInfo):
-    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='recevent_participants')
     users = models.ManyToManyField(Participant, blank=True, null=True, related_name='recommended_users')
     def save(self, *args, **kwargs):
         if timezone.now() < self.event_time:
-            self.event_current_capacity = Participant.objects.all().annotate(event_count=Count('event_participants')).count()
             if self.event_current_capacity < self.event_max_capacity:
                 super().save(*args, **kwargs)
             else:

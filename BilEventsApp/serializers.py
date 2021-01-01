@@ -89,7 +89,7 @@ class EventMainSerializer(EventSerializer):
 class EventParticipantSerializer(EventSerializer):
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = ['participants', 'event_current_capacity']
 
     def to_representation(self, instance):
         data = super(EventSerializer, self).to_representation(instance)
@@ -98,11 +98,8 @@ class EventParticipantSerializer(EventSerializer):
             queryset = Participant.objects.all()
             participant = get_object_or_404(queryset, pk=pid)
             temp.append(CurrentParticipantSerializer(participant).data)
+        data['event_current_capacity'] = len(temp)
         data['participants'] = temp
-        temp = data.copy()
-        for key in temp.keys():
-            if key != "participants":
-                del data[key]
         return data
 
 class RecommendedEventSerializer(PatchModelSerializer):
