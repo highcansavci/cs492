@@ -211,7 +211,9 @@ class RecommendedEventParticipantsView(APIView):
 
     def get(self, request, pk):
         participant = get_object_or_404(Participant, bilkent_id=pk)
+        print("aaa")
         recommended_events = participant.recevent_participants.all()
+        print("bbb")
         serializer = RecommendedEventMainSerializer(recommended_events, many=True)
         return Response(serializer.data)
     

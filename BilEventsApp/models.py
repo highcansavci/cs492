@@ -57,7 +57,7 @@ class EventInfo(models.Model):
         abstract = True
 
 class Event(EventInfo):  
-    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participant')
+    participants = models.ManyToManyField(Participant, blank=True, null=True, related_name='event_participants')
     event_score = models.PositiveIntegerField(default=0,
         validators=[
             MaxValueValidator(5),
