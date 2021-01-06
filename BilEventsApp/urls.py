@@ -1,6 +1,6 @@
 from django.urls import path, include
 from django.conf.urls import url
-from .views import ParticipantViewSet, ClubViewSet, EventViewSet, RecommendedEventViewSet, LoginView, RegisterView, ClubMembersView, RecommendedEventParticipantsView, RecommendedEventsView, SelectedEventsView, ClubLeaderView, PastEventsView, EventParticipantsView
+from .views import ParticipantViewSet, ClubViewSet, UpcomingEventsViewSet, PastEventsViewSet, RecommendedEventViewSet, LoginView, RegisterView, ClubMembersView, RecommendedEventsView, SelectedEventsView, ClubLeaderView, SelectedPastEventsView, EventParticipantsView, RateEventsView
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from django.conf.urls.static import static
 from django.conf import settings
@@ -9,7 +9,8 @@ from django.conf import settings
 router = SimpleRouter()
 router.register(r'participants', ParticipantViewSet, basename='participants')
 router.register(r'clubs', ClubViewSet, basename='clubs')
-router.register(r'events', EventViewSet, basename='events')
+router.register(r'events', UpcomingEventsViewSet, basename='events')
+router.register(r'pastevents', PastEventsViewSet, basename='events')
 router.register(r'recommendedevents', RecommendedEventViewSet, basename='recommendedevents')
 
 urlpatterns = [
@@ -19,9 +20,9 @@ urlpatterns = [
     path(r'auth/register', RegisterView.as_view()),
     path(r'club/members', ClubMembersView.as_view()),
     path(r'event/participants', EventParticipantsView.as_view()),
-    path(r'viewset/participants/<pk>/recommended_events', RecommendedEventParticipantsView.as_view()),
-    path(r'viewset/users/<pk>/recommended_events', RecommendedEventsView.as_view()),
+    path(r'viewset/participants/<pk>/recommended_events', RecommendedEventsView.as_view()),
     path(r'viewset/participants/<pk>/selected_events', SelectedEventsView.as_view()),
+    path(r'viewset/participants/<pk>/rate_events', RateEventsView.as_view()),
     path(r'viewset/participants/<pk>/leader', ClubLeaderView.as_view()),
-    path(r'viewset/participants/<pk>/past_events', PastEventsView.as_view()),
+    path(r'viewset/participants/<pk>/past_events', SelectedPastEventsView.as_view()),
 ]

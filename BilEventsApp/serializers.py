@@ -1,6 +1,6 @@
 from rest_framework import serializers
 import django.core.serializers
-from .models import Club, Event, RecommendedEvent, Participant
+from .models import Club, Event, RecommendedEvent, Participant, Rate
 from django.shortcuts import get_object_or_404
 import re
 
@@ -69,6 +69,13 @@ class ClubMemberSerializer(ClubSerializer):
                 del data[key]
         return data
 
+
+class RateSerializer(serializers.ModelSerializer):
+    event_name = serializers.ReadOnlyField(source='event.event_name')
+    class Meta:
+        model = Rate
+        fields = ['event_name', 'event_score']
+
 class EventSerializer(PatchModelSerializer):
     class Meta:
         model = Event
@@ -78,13 +85,15 @@ class EventSerializer(PatchModelSerializer):
 class EventMainSerializer(EventSerializer):
     class Meta:
         model = Event
-        fields = '__all__'
+        fields = ['event_name', 'event_place', 'event_time', 'event_points', 'event_max_capacity', 'event_description', 
+                'event_tags', 'event_zoom_link', 'club', 'event_avg_score']
+        read_only_fields = ['event_avg_score']
 
     def to_representation(self, instance):
         data = super(EventSerializer, self).to_representation(instance)
         data['club'] = ClubMainSerializer(instance.club).data
-        del data['participants']
         return data
+
 
 class EventParticipantSerializer(EventSerializer):
     class Meta:
@@ -110,16 +119,16 @@ class RecommendedEventSerializer(PatchModelSerializer):
 class RecommendedEventMainSerializer(RecommendedEventSerializer):
     class Meta:
         model = RecommendedEvent
-        fields = '__all__'
+        fields = ['event_name', 'event_place', 'event_time', 'event_points', 'event_max_capacity', 'event_description', 
+                'event_tags', 'event_zoom_link', 'club', 'event_avg_score']
+        read_only_fields = ['event_avg_score']
 
     def to_representation(self, instance):
         data = super(RecommendedEventSerializer, self).to_representation(instance)
         data['club'] = ClubMainSerializer(instance.club).data
-        del data['participants']
-        del data['users']
         return data
 
-class RecommendedEventParticipantSerializer(RecommendedEventSerializer):
+"""class RecommendedEventParticipantSerializer(RecommendedEventSerializer):
     class Meta:
         model = RecommendedEvent
         fields = ['participants', 'event_current_capacity']
@@ -132,12 +141,12 @@ class RecommendedEventParticipantSerializer(RecommendedEventSerializer):
             participant = get_object_or_404(queryset, pk=pid)
             temp.append(CurrentParticipantSerializer(participant).data)
         data['participants'] = temp
-        return data
+        return data"""
 
 class RecommendedEventUserSerializer(RecommendedEventSerializer):
     class Meta:
         model = RecommendedEvent
-        fields = '__all__'
+        fields = ['users']
 
     def to_representation(self, instance):
         data = super(RecommendedEventSerializer, self).to_representation(instance)
@@ -147,8 +156,4 @@ class RecommendedEventUserSerializer(RecommendedEventSerializer):
             participant = get_object_or_404(queryset, pk=pid)
             temp.append(CurrentParticipantSerializer(participant).data)
         data['users'] = temp
-        temp = data.copy()
-        for key in temp.keys():
-            if key != "users":
-                del data[key]
         return data

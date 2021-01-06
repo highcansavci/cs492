@@ -1,5 +1,5 @@
-from .models import Club, Event, RecommendedEvent, Participant
-from .serializers import CurrentParticipantSerializer, ClubSerializer, EventSerializer, RecommendedEventSerializer, ClubMemberSerializer, ClubMainSerializer, EventMainSerializer, EventParticipantSerializer, RecommendedEventMainSerializer, RecommendedEventParticipantSerializer, RecommendedEventUserSerializer
+from .models import Club, Event, RecommendedEvent, Participant, Rate
+from .serializers import CurrentParticipantSerializer, ClubSerializer, EventSerializer, RecommendedEventSerializer, RecommendedEventMainSerializer, ClubMemberSerializer, ClubMainSerializer, EventMainSerializer, EventParticipantSerializer, RecommendedEventUserSerializer, RateSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
@@ -75,10 +75,25 @@ class ClubLeaderView(APIView):
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-class EventViewSet(viewsets.ModelViewSet):
+class UpcomingEventsViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventMainSerializer
     lookup_field = 'event_name'
+    
+    def get_queryset(self):
+        queryset = self.queryset
+        query_set = queryset.filter(event_time__gte=timezone.now())
+        return query_set
+
+
+class PastEventsViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventMainSerializer
+    lookup_field = 'event_name'
+    def get_queryset(self):
+        queryset = self.queryset
+        query_set = queryset.filter(event_time__lt=timezone.now())
+        return query_set
 
 
 class EventParticipantsView(APIView):
@@ -87,11 +102,20 @@ class EventParticipantsView(APIView):
 
     def get(self, request):
         event = get_object_or_404(Event, event_name=request.GET['event_name'])
+        print(type(event))
         serializer = EventParticipantSerializer(event)
         return Response(serializer.data)
 
     def post(self, request):
+        participant_list = []
         event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if type(request.data['participants']) == int:
+            participant_list.append(request.data['participants'])
+        elif type(request.data['participants']) == list:
+            participant_list.extend(request.data['participants'])
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -100,12 +124,14 @@ class EventParticipantsView(APIView):
 
     def put(self, request):
         event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         participant_list = [participant.bilkent_id for participant in event.participants.all()]
         if type(request.data['participants']) == int:
             participant_list.append(request.data['participants'])
         elif type(request.data['participants']) == list:
             participant_list.extend(request.data['participants'])
-        request.data['participants'] = participant_list
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -114,17 +140,18 @@ class EventParticipantsView(APIView):
     
     def delete(self, request):
         event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         if type(request.data['participants']) == int:
             participant_list = [participant.bilkent_id for participant in event.participants.all() if request.data['participants'] != participant.bilkent_id]
         elif type(request.data['participants']) == list:
             participant_list = [participant.bilkent_id for participant in event.participants.all() if not(participant.bilkent_id  in request.data['participants'])]
-        request.data['participants'] = participant_list
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class SelectedEventsView(APIView):
@@ -133,14 +160,18 @@ class SelectedEventsView(APIView):
     
     def get(self, request, pk):
         participant = get_object_or_404(Participant, bilkent_id=pk)
-        selected_events = participant.event_participants.all()
+        selected_events = participant.eventinfo_set.filter(event_time__gte=timezone.now())
         serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
     
     def post(self, request, pk):
-        participant = get_object_or_404(Participant, bilkent_id=pk)
         event = get_object_or_404(Event, event_name=request.data['event_name'])
-        event.participant = participant
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        participant_list = []
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        participant_list.append(participant)
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -149,13 +180,16 @@ class SelectedEventsView(APIView):
 
     def put(self, request, pk):
         event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         participant_list = [participant.bilkent_id for participant in event.participants.all()]
         participant = int(pk)
         if not(participant in participant_list):
             participant_list.append(participant)
         else:
             return Response(status=status.HTTP_409_CONFLICT)
-        request.data['participants'] = participant_list
+        print(participant_list)
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -164,13 +198,15 @@ class SelectedEventsView(APIView):
     
     def delete(self, request, pk):
         event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         participant_list = [participant.bilkent_id for participant in event.participants.all()]
         participant = int(pk)
         if participant in participant_list:
             participant_list.remove(participant)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        request.data['participants'] = participant_list
+        event.participants.set(participant_list) 
         serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -178,84 +214,112 @@ class SelectedEventsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class PastEventsView(APIView):
+class SelectedPastEventsView(APIView):
     authentication_classes = ()
     permission_classes = ()
     
     def get(self, request, pk):
         participant = get_object_or_404(Participant, bilkent_id=pk)
-        selected_events = participant.event_participants.filter(event_time__lt=timezone.now())
+        selected_events = participant.eventinfo_set.filter(event_time__lt=timezone.now())
         serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
     
-    def put(self, request, pk):
-        participant = get_object_or_404(Participant, bilkent_id=pk)
-        event = get_object_or_404(Event, event_name=request.data['event_name'])
-        if event.event_time < timezone.now() and event.event_score == 0:
-            serializer = EventMainSerializer(event, data=request.data, partial=True)
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 
-class RecommendedEventViewSet(viewsets.ModelViewSet):
-    queryset = RecommendedEvent.objects.all()
-    serializer_class = RecommendedEventMainSerializer
-    lookup_field = 'event_name'
-
-class RecommendedEventParticipantsView(APIView):
+class SelectedEventsView(APIView):
     authentication_classes = ()
     permission_classes = ()
-
+    
     def get(self, request, pk):
         participant = get_object_or_404(Participant, bilkent_id=pk)
-        print("aaa")
-        recommended_events = participant.recevent_participants.all()
-        print("bbb")
-        serializer = RecommendedEventMainSerializer(recommended_events, many=True)
+        selected_events = participant.eventinfo_set.filter(event_time__gte=timezone.now())
+        serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
     
     def post(self, request, pk):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        participant_list = []
         participant = get_object_or_404(Participant, bilkent_id=pk)
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
-        recevent.participant = participant
-        serializer = RecommendedEventParticipantSerializer(recevent, data=request.data)
+        participant_list.append(participant)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         participant_list = [participant.bilkent_id for participant in event.participants.all()]
         participant = int(pk)
         if not(participant in participant_list):
             participant_list.append(participant)
         else:
             return Response(status=status.HTTP_409_CONFLICT)
-        request.data['participants'] = participant_list
-        serializer = RecommendedEventParticipantSerializer(recevent, data=request.data, partial=True)
+        print(participant_list)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
         participant_list = [participant.bilkent_id for participant in event.participants.all()]
         participant = int(pk)
         if participant in participant_list:
             participant_list.remove(participant)
         else:
             return Response(status=status.HTTP_404_NOT_FOUND)
-        request.data['participants'] = participant_list
-        serializer = RecommendedEventParticipantSerializer(recevent, data=request.data)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class RateEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        rate_events = Rate.objects.filter(participant=participant)
+        serializer = RateSerializer(rate_events, many=True)
+        return Response(serializer.data)
+    
+    
+    def put(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        selected_event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if selected_event.event_time < timezone.now():
+            rate_events = Rate.objects.get(participant=participant, event=selected_event)
+            if rate_events.event_score == 0:
+                rate_events.event_score = request.data['event_score']
+                serializer = RateSerializer(rate_events, data=request.data, partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    raters = Rate.objects.filter(event=selected_event, event_score__gt=0).count()
+                    temp = (selected_event.event_avg_score * raters + request.data['event_score']) / (raters + 1)
+                    Event.objects.filter(event_name=selected_event.event_name).update(event_avg_score=temp)
+                    return Response(serializer.data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+class RecommendedEventViewSet(viewsets.ModelViewSet):
+    queryset = RecommendedEvent.objects.all()
+    serializer_class = RecommendedEventMainSerializer
+    lookup_field = 'event_name'
 
 
 class RecommendedEventsView(APIView):
