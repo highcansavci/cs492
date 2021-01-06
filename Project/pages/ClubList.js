@@ -1,8 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 import { StyleSheet, View, StatusBar, Image, Text,ScrollView} from "react-native";
 import HeaderSection from "./components/HeaderSection";
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import Divider from "./components/Divider";
 import Footer from "./components/Footer";
 import ClubComponent from "./components/ClubComponent";
@@ -98,7 +96,7 @@ class ClubList extends React.Component {
             </ScrollView>
           </View>
         </View>
-        <Footer ></Footer>
+        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} logo={this.props.route.params.logo}></Footer>
       </View>
     );
   }

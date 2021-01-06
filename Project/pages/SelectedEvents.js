@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { StyleSheet, View, StatusBar, Image, Text,ScrollView} from "react-native";
 import HeaderSection from "./components/HeaderSection";
-import MaterialCommunityIconsIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import IoniconsIcon from "react-native-vector-icons/Ionicons";
 import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
 import Footer from "./components/Footer";
@@ -15,7 +13,7 @@ function myFunction(datetime) {
   var days = -1 * Math.floor(ms / (24 * 60 * 60 * 1000));
   var daysms=ms % (24 * 60 * 60 * 1000);
   var hours = Math.floor((daysms)/(60 * 60 * 1000));
-  return days+"d "+hours+"h";
+  return days;
 }
 
 function fixData(date){
@@ -33,22 +31,24 @@ const setPostComponents = (id,stateData) => {
     return (<Text>An error has occured!</Text>)
 
   else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
-    return stateData.data.map(i => (
-      <PostComponent
-        key = {i.id}
-        clubName={i.club.club_name}
-        dateTime={fixData(i.event_time.substring(0,10))}
-        postAgo={myFunction(i.event_time)}
-        eventName={i.event_name}
-        time={i.event_time.substring(11,16)}
-        place={i.event_place}
-        capacity={i.event_max_capacity}
-        gePoints={i.event_points}
-        logo = {i.club.logo}
-        eventPage = "selectedEvents"
-        participantID = {id}
-      />
-    ));
+    return stateData.data.map(i => {
+      if(myFunction(i.event_time)>0)
+        return (<PostComponent
+                  key = {i.event_name}
+                  clubName={i.club.club_name}
+                  dateTime={fixData(i.event_time.substring(0,10))}
+                  postAgo={myFunction(i.event_time)}
+                  eventName={i.event_name}
+                  time={i.event_time.substring(11,16)}
+                  place={i.event_place}
+                  capacity={i.event_max_capacity}
+                  gePoints={i.event_points}
+                  logo = {i.club.logo}
+                  eventPage = "selectedEvents"
+                  participantID = {id}
+                />
+        )   
+    });
   else
     return (<Text >There is no selected event.</Text>);
 }
@@ -140,7 +140,7 @@ class SelectedEvents extends React.Component {
             </ScrollView>
           </View>
         </View>
-        <Footer bilkent_id={this.props.route.params.userID}></Footer>
+        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} logo={this.props.route.params.logo}></Footer>
       </View>
     );
   }

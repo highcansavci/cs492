@@ -1,7 +1,9 @@
-import React, { Component } from "react";
-import { StyleSheet, View, Image, Text,TouchableHighlight } from "react-native";
+import React from "react";
+import { StyleSheet, View, Image,Dimensions, Text,TouchableHighlight } from "react-native";
 import EntypoIcon from "react-native-vector-icons/Entypo";
 import EvilIconsIcon from "react-native-vector-icons/EvilIcons";
+import { Rating, AirbnbRating } from 'react-native-ratings';
+const { width, height } = Dimensions.get('window');
 
 function checkingGEPoints(point){
   if(point ==0)
@@ -63,32 +65,71 @@ async function leaveEvent(bilkent_id,eventName){
     alert("Deleted Successfully" );
   }
 }
-function checkEventPage(eventPage,eventName,bilkent_id){
-  if(eventPage == "selectedEvents")
-    return <TouchableHighlight onPress={()=>leaveEvent(bilkent_id,eventName)}>
-            <View>
-              <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
-            </View>
-    </TouchableHighlight>
+function addZoomButton(eventPage)
+{
+  if(eventPage != "pastEvents")
+  return <TouchableHighlight onPress={()=>console.log("share")}>
+          <View>
+            <EvilIconsIcon name="share-google" style={styles.icon3}></EvilIconsIcon>
+          </View>
+        </TouchableHighlight>
+}
 
-  else if(eventPage == "upcomingEvents" || eventPage == "recommendedEvents" )
-    return <TouchableHighlight onPress={()=>joinEvent(bilkent_id,eventName)}>
-      <View>
-        <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
-      </View>
-    </TouchableHighlight>
-    
-  else if(eventPage == "pastEvents")
-  return <TouchableHighlight onPress={()=>joinEvent(bilkent_id,eventName)}>
-    <View>
-      <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
-    </View>
-  </TouchableHighlight>
 
+function checkRating(rate){
+  return
+}
+function calculateDay(day) {
+  if(day == -1)
+    return "Yesterday";
+  if(day == 0)
+    return "Today";
+  else if(day<-1)
+    return -1*day+"d Ago";
+  else
+    if(day>0 &&day<=29)
+      return day+"d Left";
+    else
+      if(day/30 != 0)
+        return day%30+"M "+parseInt(day/30)+"d Left";
+      else
+        return day%30+"M";
 }
 
 function PostComponent(props){
   
+  function checkEventPage(eventPage,eventName,bilkent_id){
+    if(eventPage == "selectedEvents")
+      return <View style={styles.iconRow2}>                
+                <TouchableHighlight onPress={()=>leaveEvent(bilkent_id,eventName)}>
+                  <View>
+                    <EntypoIcon name="remove-user" style={styles.icon2}></EntypoIcon>
+                  </View>
+                </TouchableHighlight>
+                {addZoomButton(props.eventPage)}
+             </View>
+    else if(eventPage == "upcomingEvents" || eventPage == "recommendedEvents" )
+      return <View style={styles.iconRow2}>
+              <TouchableHighlight onPress={()=>joinEvent(bilkent_id,eventName)}>
+                <View>
+                  <EntypoIcon name="add-user" style={styles.icon}></EntypoIcon>
+                </View>
+              </TouchableHighlight>
+              
+              {addZoomButton(props.eventPage)}
+            </View>
+      
+    else if(eventPage == "pastEvents")
+      return  <View style={styles.iconRow}>
+                <AirbnbRating
+                  count={5}
+                  reviews={["Terrible", "Bad", "Neutral", "Good", "Very Good"]}
+                  defaultRating={5}
+                  onFinishRating = {checkRating()}
+                  size={20}
+                  />
+              </View>
+  }
     return (
     <View style={[styles.container, props.style]}>
       <View style={styles.imageRow}>
@@ -102,8 +143,9 @@ function PostComponent(props){
             <Text style={styles.ieee}>{props.clubName}</Text>
           </View>
           <View style={styles.loremIpsumRow}>
-            <Text style={styles.loremIpsum}>{props.dateTime}</Text>
-            <Text style={styles.loremIpsum4}>• {props.postAgo}</Text>
+         
+            <Text style={styles.loremIpsum}>{props.dateTime} </Text>
+            <Text style={styles.loremIpsum4}>• {calculateDay(props.postAgo)}</Text>
           </View>
         </View>
       </View>
@@ -115,17 +157,11 @@ function PostComponent(props){
       <Text style={styles.place}>Place : {props.place}</Text>
       <Text style={styles.capacity}>Capacity : {checkingCapacity(props.capacity)}</Text>
       <Text style={styles.ge250251Points}>GE 250/251 Points : {checkingGEPoints(props.gePoints)}</Text>
-      <View style={styles.iconRow}>
         {checkEventPage(props.eventPage,props.eventName,props.participantID)}
-        <TouchableHighlight onPress={()=>console.log("share")}>
-          <View>
-            <EvilIconsIcon name="share-google" style={styles.icon3}></EvilIconsIcon>
-          </View>
-        </TouchableHighlight>
-      </View>
+        
     </View>
   );
-  
+
 }
 
 const styles = StyleSheet.create({
@@ -175,7 +211,7 @@ const styles = StyleSheet.create({
   loremIpsum4: {
     color: "rgba(255,255,255,1)",
     height: 18,
-    width: 39,
+    width: 100,
     marginLeft: 4
   },
   loremIpsumRow: {
@@ -185,7 +221,7 @@ const styles = StyleSheet.create({
     marginRight: 92
   },
   ieeeStackColumn: {
-    width: 209,
+    width: width *0.6,
     marginLeft: 17
   },
   imageRow: {
@@ -260,10 +296,18 @@ const styles = StyleSheet.create({
     marginLeft: 192
   },
   iconRow: {
-    height: 44,
+    height: height*0.13,
     flexDirection: "row",
     marginLeft: 8,
-    marginRight: 16
+    marginRight: 16,
+    marginBottom:10
+  },
+  iconRow2: {
+    flexDirection: "row",
+    marginLeft: 8,
+    marginRight: 16,
+    
+    marginBottom:10
   }
 });
 

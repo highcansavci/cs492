@@ -2,21 +2,19 @@ import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
-
-
 export default class Login extends React.Component {
   state={
     bilkent_id:"",
     password:"",
   }
-
+  
   async userLogin (bilkent_id,password) {
     var url;
     if(bilkent_id == "" && password == "")
-      url = "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+"12123098"+"&password="+"1231dsf23";
-    else
-      url = "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+bilkent_id+"&password="+password;
-
+      url = await "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+"12123098"+"&password="+"1231dsf23";
+    else{
+      url = await "https://bileventsapp.herokuapp.com/auth/login?bilkent_id="+bilkent_id+"&password="+password;
+    }
     const response = await fetch(url);
     if(response.status == "400")
     {
@@ -26,8 +24,20 @@ export default class Login extends React.Component {
     const data = await response.json();
 
     if(data.bilkent_id == bilkent_id && data.password == password){
-      this.props.navigation.navigate('Homepage',{userID: bilkent_id})
+      url = await "https://bileventsapp.herokuapp.com/viewset/participants/"+bilkent_id+"/leader";
+      let resp = await fetch(url); 
+
+      if(resp.status == "200"){
+        let dt = await resp.json();
+        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club: dt.club_name, clubTag:dt.club_tags,logo:dt.logo})
+      }
+      else
+      {
+        console.log("else")
+        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club:"",clubTag:"",logo:""})
+      } 
     }
+
     else{
       alert("Wrong ID or Password");
       this.props.navigation.navigate('Login');

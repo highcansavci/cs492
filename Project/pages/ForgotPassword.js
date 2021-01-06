@@ -2,8 +2,6 @@ import React from 'react';
 import { StyleSheet,Image, Text, View, TextInput, TouchableOpacity, Dimensions } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
-
-
 export default class ForgotPassword extends React.Component {
   state={
     email:""
@@ -22,7 +20,7 @@ export default class ForgotPassword extends React.Component {
             placeholderTextColor="white"
             onChangeText={text => this.setState({email:text})}/>
         </View>      
-        <TouchableOpacity style={styles.loginBtn} onPress = {() =>alert('New Password is sent to '+ this.state.email)}>
+        <TouchableOpacity style={styles.loginBtn} onPress = {() =>{alert('Password has been sent to '+ this.state.email);navigation.navigate('Login')}}>
           <Text style={styles.loginText} >Send Email</Text>
         </TouchableOpacity>  
       </View>

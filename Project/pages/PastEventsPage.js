@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, StatusBar, Text,ScrollView} from "react-native";
+import { StyleSheet, View, StatusBar, Image, Text,ScrollView} from "react-native";
 import HeaderSection from "./components/HeaderSection";
 import Divider from "./components/Divider";
 import PostComponent from "./components/PostComponent";
@@ -12,7 +12,7 @@ function myFunction(datetime) {
   var ms = now - date;
   var days = -1 * Math.floor(ms / (24 * 60 * 60 * 1000));
   var daysms=ms % (24 * 60 * 60 * 1000);
-  var hours = -1 * Math.floor((daysms)/(60 * 60 * 1000));
+  var hours = Math.floor((daysms)/(60 * 60 * 1000));
   return days;
 }
 
@@ -20,40 +20,40 @@ function fixData(date){
   date = date.substring(8,10)+ "."+date.substring(5,7)+"."+date.substring(0,4)
   return date;
 }
-
 const setPostComponents = (id,stateData) => {
   if(null == stateData || undefined == stateData)
-    return;
+    return 
 
   if(stateData.isLoading)
-    return (<Text>Loaging.....</Text>)
+    return (<Text>Loading.....</Text>)
 
   else if(stateData.isError)
     return (<Text>An error has occured!</Text>)
 
   else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
-    
-    return stateData.data.map(i =>{
-      if(myFunction(i.event_time)>0)
+    return stateData.data.map(i => {
+      if(myFunction(i.event_time)<=0)
         return (<PostComponent
-          key = {i.event_name}
-          clubName={i.club.club_name}
-          dateTime={fixData(i.event_time.substring(0,10))}
-          postAgo={myFunction(i.event_time)}
-          eventName={i.event_name}
-          time={i.event_time.substring(11,16)}
-          place={i.event_place}
-          capacity={i.event_max_capacity}
-          gePoints={i.event_points}
-          logo = {i.club.logo}
-          eventPage = "upcomingEvents"
-          participantID = {id}
-        /> )
-    });     
+                  key = {i.event_name}
+                  clubName={i.club.club_name}
+                  dateTime={fixData(i.event_time.substring(0,10))}
+                  postAgo={myFunction(i.event_time)}
+                  eventName={i.event_name}
+                  time={i.event_time.substring(11,16)}
+                  place={i.event_place}
+                  capacity={i.event_max_capacity}
+                  gePoints={i.event_points}
+                  logo = {i.club.logo}
+                  eventPage = "pastEvents"
+                  participantID = {id}
+                />
+        )
+      });
+  else
+    return (<Text >There is no past event.</Text>);
 }
 
-
-class Homepage extends React.Component {
+class PastEventsPage extends React.Component {
   state={
     isLoading : false,
     data:[],
@@ -63,7 +63,8 @@ class Homepage extends React.Component {
   
   async componentDidMount () {    
     try{
-      let response = await fetch('https://bileventsapp.herokuapp.com/viewset/events/');
+      const url = "https://bileventsapp.herokuapp.com/viewset/participants/"+this.props.route.params.userID+"/selected_events"; 
+      let response = await fetch(url);
 
       if(null === response || undefined === response){
         this.setState({
@@ -127,6 +128,7 @@ class Homepage extends React.Component {
                   onChangeItem={item => this.setState({select: item.value })} 
                 >
               </DropDownPicker>
+              
             </View>
           </View>
         </View>
@@ -251,4 +253,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Homepage;
+export default PastEventsPage;
