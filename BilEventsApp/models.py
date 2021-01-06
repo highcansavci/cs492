@@ -56,13 +56,10 @@ class EventInfo(models.Model):
 
 class Event(EventInfo):    
     def save(self, *args, **kwargs):
-        if timezone.now() < self.event_time:
-            if self.event_current_capacity < self.event_max_capacity:
-                super().save(*args, **kwargs)
-            else:
-                raise ValidationError(_('Cannot exceed the maximum capacity'), code='max')
+        if self.event_current_capacity < self.event_max_capacity:
+            super().save(*args, **kwargs)
         else:
-            raise ValidationError(_('Cannot add an upcoming event whose time is passed.'), code='past')
+            raise ValidationError(_('Cannot exceed the maximum capacity'), code='max')
             
     class Meta:
         ordering = ('event_time',)
