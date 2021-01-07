@@ -85,15 +85,11 @@ class Command(BaseCommand):
 
     def content_based(self):
         df_train_x, df_train_y, df_test_x, df_test_y, df_test_items = self.create_cb_dataset()
-        offset = df_train_y.min()
-        df_train_y = df_train_y - offset
         dtrain = xgb.DMatrix(df_train_x, label=df_train_y, enable_categorical=True) 
         dtest = xgb.DMatrix(df_test_x, enable_categorical=True) 
-        xg_cls = xgb.XGBClassifier(max_depth=9, objective='multi:softmax', n_estimators=1000, eval_metric="mlogloss", use_label_encoder=False)
+        xg_cls = xgb.XGBClassifier(max_depth=9, objective='multi:softmax', n_estimators=1000, eval_metric="mlogloss", use_label_encoder=True)
         xg_cls.fit(df_train_x, df_train_y['rating'])
         ypred = xg_cls.predict(df_test_x)
-        for i in range(ypred.shape[0]):
-            ypred[i] += offset
         content_test_y = {'rating': ypred}
         df_pred_y = pd.DataFrame(content_test_y)
         df_test_x['rating'] = ypred
