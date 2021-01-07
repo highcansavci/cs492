@@ -34,7 +34,7 @@ const setPostComponents = (id,stateData) => {
   else if (null != stateData.data && undefined != stateData.data && stateData.data.length > 0)
     
     return stateData.data.map(i =>{
-      if(myFunction(i.event_time)>0)
+      if(myFunction(i.event_time))
         return (<PostComponent
           key = {i.event_name}
           clubName={i.club.club_name}
@@ -121,7 +121,7 @@ class Homepage extends React.Component {
                     {label: 'IN A SEMESTER', value: 'semester'},
                   ]}
                   containerStyle={{height: '100%', width: '90%'}}
-                  style={{backgroundColor: '#fafafa', marginBottom: 10}}
+                  style={{backgroundColor: '#fafafa',paddingLeft: 3,marginTop: 3, marginBottom: 8}}
                   itemStyle={{justifyContent: 'flex-start'}}
                   dropDownStyle={{backgroundColor: '#fafafa'}}
                   onChangeItem={item => this.setState({select: item.value })} 

@@ -76,28 +76,32 @@ function addZoomButton(eventPage)
 }
 
 
-function checkRating(rate){
-  return
-}
 function calculateDay(day) {
   if(day == -1)
     return "Yesterday";
   if(day == 0)
     return "Today";
   else if(day<-1)
-    return -1*day+"d Ago";
+    if(parseInt((-1*day)/30) > 0)
+      return parseInt((-1*day)/30)+"M "+(-1*day)%30+"d Ago";
+    else
+      return (-1*day)+"d Ago";
   else
     if(day>0 &&day<=29)
       return day+"d Left";
     else
-      if(day/30 != 0)
-        return day%30+"M "+parseInt(day/30)+"d Left";
-      else
-        return day%30+"M";
+      if(day%30 ==0)
+      return day%30+"M Left";
+      else if(day%30 > 1 && day%30 <= 29)
+        return parseInt(day/30)+"M "+day%30+"d Left";
 }
 
 function PostComponent(props){
-  
+
+  function ratingCompleted(rating) {
+    
+  }
+
   function checkEventPage(eventPage,eventName,bilkent_id){
     if(eventPage == "selectedEvents")
       return <View style={styles.iconRow2}>                
@@ -125,7 +129,7 @@ function PostComponent(props){
                   count={5}
                   reviews={["Terrible", "Bad", "Neutral", "Good", "Very Good"]}
                   defaultRating={5}
-                  onFinishRating = {checkRating()}
+                  onFinishRating = {ratingCompleted}
                   size={20}
                   />
               </View>
@@ -228,7 +232,7 @@ const styles = StyleSheet.create({
     height: 53,
     flexDirection: "row",
     marginTop: 5,
-    marginLeft: 15,
+    marginLeft: width *0.14,
     marginRight: 49
   },
   event: {

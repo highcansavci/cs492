@@ -118,7 +118,7 @@ class RecommendedEvents extends React.Component {
                     {label: 'IN A SEMESTER', value: 'semester'},
                   ]}
                   containerStyle={{height: '100%', width: '90%'}}
-                  style={{backgroundColor: '#fafafa', marginBottom: 10}}
+                  style={{backgroundColor: '#fafafa',paddingLeft: 3,marginTop: 3, marginBottom: 8}}
                   itemStyle={{justifyContent: 'flex-start'}}
                   dropDownStyle={{backgroundColor: '#fafafa'}}
                   onChangeItem={item => this.setState({select: item.value })} 
