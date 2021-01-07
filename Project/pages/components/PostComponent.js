@@ -42,7 +42,7 @@ async function joinEvent(bilkent_id,eventName) {
 }
 
 async function leaveEvent(bilkent_id,eventName){
-  const url = "https://bileventsapp.herokuapp.com/viewset/participants/"+bilkent_id+"/selected_events";
+  const url = await "https://bileventsapp.herokuapp.com/viewset/participants/"+bilkent_id+"/selected_events";
   const response = await fetch(url, { 
     method: "DELETE", 
     headers: { 
@@ -95,13 +95,33 @@ function calculateDay(day) {
       else if(day%30 > 1 && day%30 <= 29)
         return parseInt(day/30)+"M "+day%30+"d Left";
 }
+async function rateEvent(rating,props){
+  let url = await "https://bileventsapp.herokuapp.com/viewset/participants/"+props.participantID+"/rate_events";   
+  let response = await fetch(url, { 
+    method: "PUT", 
+    headers: { 
+      'Accept': 'application/json', 
+      'Content-Type': 'application/json' 
+    },
+    body: JSON.stringify({ 
+      event_name: props.eventName,
+      event_score: rating
+    }) 
+  });
+  if(response.status== 200)
+  {
+    alert("Successfully Rated");
+  }
+  else if(response.status == 400){
+    alert("You have already rated!");
+  }  
+}
 
 function PostComponent(props){
 
-  function ratingCompleted(rating) {
-    
+  function ratingCompleted(rating){
+    rateEvent(rating,props);
   }
-
   function checkEventPage(eventPage,eventName,bilkent_id){
     if(eventPage == "selectedEvents")
       return <View style={styles.iconRow2}>                
