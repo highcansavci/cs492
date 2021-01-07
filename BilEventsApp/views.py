@@ -81,8 +81,15 @@ class EventViewSet(viewsets.ModelViewSet):
     lookup_field = 'event_name'
 
     def create(self, request, *args, **kwargs):
-        club = get_object_or_404(Club, club_name=request.data['club'])
+        if type(request.data['club']) is int:
+            club = get_object_or_404(Club, id=request.data['club'])
+        elif type(request.data['club']) is str and request.data['club'].isalpha():
+            club = get_object_or_404(Club, club_name=request.data['club'])
+        elif type(request.data['club']) is str and request.data['club'].isnumeric():
+            club = get_object_or_404(Club, id=request.data['club'])
+        request.data._mutable = True
         request.data['club'] = club.id 
+        request.data._mutable = False
         response = super().create(request, *args, **kwargs)
         instance = response.data
         return Response({'status': 'success', 'club name': instance['club']})

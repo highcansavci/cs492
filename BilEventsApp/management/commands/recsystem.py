@@ -95,6 +95,7 @@ class Command(BaseCommand):
         content_test_y = {'rating': ypred}
         df_pred_y = pd.DataFrame(content_test_y)
         df_test_x['rating'] = ypred
+        print(df_test_x)
         return df_test_x
     
     def get_top_n(self, predictions, n=10):
@@ -109,7 +110,6 @@ class Command(BaseCommand):
         return top_n
 
     def collaborative_filtering(self):
-        # Load the movielens-100k dataset (download it if needed),
         ratings_train = {'itemID': [],
                         'userID': [],
                         'rating': []}
