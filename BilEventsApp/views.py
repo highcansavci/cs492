@@ -79,6 +79,13 @@ class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventMainSerializer
     lookup_field = 'event_name'
+
+    def create(self, request, *args, **kwargs):
+        club = get_object_or_404(Club, club_name=request.data['club'])
+        request.data['club'] = club.id 
+        response = super().create(request, *args, **kwargs)
+        instance = response.data
+        return Response({'status': 'success', 'club name': instance['club']})
     
 
 class PastEventsViewSet(viewsets.ModelViewSet):
@@ -97,7 +104,6 @@ class EventParticipantsView(APIView):
 
     def get(self, request):
         event = get_object_or_404(Event, event_name=request.GET['event_name'])
-        print(type(event))
         serializer = EventParticipantSerializer(event)
         return Response(serializer.data)
 
