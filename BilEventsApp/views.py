@@ -9,6 +9,8 @@ from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from django.core.exceptions import SuspiciousOperation, ObjectDoesNotExist
 from django.utils import timezone
+from django.core.management import call_command
+from io import StringIO
 
 # Create your views here.
 
@@ -89,7 +91,6 @@ class EventViewSet(viewsets.ModelViewSet):
             club = get_object_or_404(Club, id=request.data['club'])
         request.data._mutable = True
         request.data['club'] = club.id 
-        request.data._mutable = False
         response = super().create(request, *args, **kwargs)
         instance = response.data
         return Response({'status': 'success', 'club name': instance['club']})
@@ -257,11 +258,6 @@ class RateEventsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class RecommendedEventViewSet(viewsets.ModelViewSet):
-    queryset = RecommendedEvent.objects.all()
-    serializer_class = RecommendedEventMainSerializer
-    lookup_field = 'event_name'
-
 
 class RecommendedEventsView(APIView):
     authentication_classes = ()
@@ -269,46 +265,14 @@ class RecommendedEventsView(APIView):
     
     def get(self, request, pk):
         user = get_object_or_404(Participant, bilkent_id=pk)
-        recommended_events = user.recommended_users.all()
-        serializer = RecommendedEventMainSerializer(recommended_events, many=True)
+        out = StringIO()
+        call_command('recsystem', stdout=out)
+        value = out.getvalue()
+        items = value.split()
+        event_names = []
+        for i in range(0, len(items), 2):
+            if int(items[i]) == user.bilkent_id:
+                event_names.append(items[i + 1])
+        events = Event.objects.filter(event_name__in=event_names) 
+        serializer = EventMainSerializer(events, many=True)
         return Response(serializer.data)
-    
-    def post(self, request, pk):
-        user = get_object_or_404(Participant, bilkent_id=pk)
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
-        recevent.users = user
-        serializer = RecommendedEventUserSerializer(recevent, data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk):
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
-        user_list = [user.bilkent_id for user in recevent.users.all()]
-        user = int(pk)
-        if not(user in user_list):
-            user_list.append(participant)
-        else:
-            return Response(status=status.HTTP_409_CONFLICT)
-        request.data['users'] = user_list
-        serializer = RecommendedEventUserSerializer(recevent, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk):
-        recevent = get_object_or_404(RecommendedEvent, event_name=request.data['event_name'])
-        user_list = [user.bilkent_id for user in recevent.users.all()]
-        user = int(pk)
-        if user in user_list:
-            user_list.remove(user)
-        else:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        request.data['users'] = user_list
-        serializer = RecommendedEventUserSerializer(recevent, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
