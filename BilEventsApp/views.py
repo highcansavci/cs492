@@ -268,7 +268,7 @@ class RecommendedEventsView(APIView):
         out = StringIO()
         call_command('recsystem', stdout=out)
         value = out.getvalue()
-        items = value.split()
+        items = value.split(",")[:-1]
         event_names = []
         for i in range(0, len(items), 2):
             if int(items[i]) == user.bilkent_id:

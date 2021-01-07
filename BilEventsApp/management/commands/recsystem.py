@@ -149,7 +149,7 @@ class Command(BaseCommand):
         recommended_list = ""
         for uid, user_ratings in top_n.items():
             for iid, _ in user_ratings:
-                recommended_list += str(uid) + " " + str(iid) + "\n"
+                recommended_list += str(uid) + "," + str(iid) + ","
         return recommended_list
 
 
