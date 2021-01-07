@@ -9,28 +9,28 @@ function Footer(props) {
   const navigation = useNavigation();
   return (
     <View style={[styles.container, styles.property]}>
-      <TouchableOpacity style={styles.button3} onPress={() => { navigation.navigate('Homepage',{userID: props.bilkent_id,club : props.club,clubTag :props.clubTag,logo:props.logo})}}>
+      <TouchableOpacity style={styles.button3} onPress={() => { navigation.navigate('Homepage',{userID: props.bilkent_id,club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}}>
         <MaterialCommunityIconsIcon name="home" style={styles.icon3}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button2} onPress={() => { navigation.navigate('SelectedEvents',{userID: props.bilkent_id,club : props.club,clubTag :props.clubTag,logo:props.logo})}} >
+      <TouchableOpacity style={styles.button2} onPress={() => { navigation.navigate('SelectedEvents',{userID: props.bilkent_id,club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}} >
         <MaterialCommunityIconsIcon name="heart" style={styles.icon6}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
       
-      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('RecommendedEvents',{userID: props.bilkent_id,club : props.club,clubTag :props.clubTag,logo:props.logo})}  >
+      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('RecommendedEvents',{userID: props.bilkent_id,club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}  >
         <MaterialCommunityIconsIcon name="checkbox-multiple-marked-outline" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('PastEventsPage',{userID: props.bilkent_id,club : props.club,clubTag :props.clubTag,logo:props.logo})}  >
+      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('PastEventsPage',{userID: props.bilkent_id,club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}  >
         <MaterialCommunityIconsIcon name="content-save" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('ClubList',{userID: props.bilkent_id,club : props.club,clubTag :props.clubTag,logo:props.logo})}>
+      <TouchableOpacity style={styles.button4} onPress={() => navigation.navigate('ClubList',{userID: props.bilkent_id,club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}>
         <IoniconsIcon name="logo-github" style={styles.icon4}></IoniconsIcon>
       </TouchableOpacity>
 
       {props.club != "" ?
-      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('AddEventPage',{userID: props.bilkent_id, club : props.club,clubTag :props.clubTag,logo:props.logo})}  >
+      <TouchableOpacity style={styles.button2} onPress={() => navigation.navigate('AddEventPage',{userID: props.bilkent_id, club : props.club,clubID : props.clubID,clubTag :props.clubTag,logo:props.logo})}  >
         <MaterialCommunityIconsIcon name="plus" style={styles.icon7}></MaterialCommunityIconsIcon>
       </TouchableOpacity>
       :null}

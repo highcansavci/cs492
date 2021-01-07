@@ -29,12 +29,11 @@ export default class Login extends React.Component {
 
       if(resp.status == "200"){
         let dt = await resp.json();
-        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club: dt.club_name, clubTag:dt.club_tags,logo:dt.logo})
+        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club: dt.club_name,clubID:dt.id, clubTag:dt.club_tags,logo:dt.logo})
       }
       else
       {
-        console.log("else")
-        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club:"",clubTag:"",logo:""})
+        this.props.navigation.navigate('Homepage',{userID: bilkent_id, club:"",clubTag:"",clubID:"",logo:""})
       } 
     }
 

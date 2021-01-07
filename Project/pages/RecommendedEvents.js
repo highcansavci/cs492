@@ -135,7 +135,7 @@ class RecommendedEvents extends React.Component {
             </ScrollView>
           </View>
         </View>
-        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} logo={this.props.route.params.logo}></Footer>
+        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} clubID = {this.props.route.params.clubID} logo={this.props.route.params.logo}></Footer>
       </View>
     );
   }

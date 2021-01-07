@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     height: 53,
     flexDirection: "row",
     marginTop: 5,
-    marginLeft: 8,
+    marginLeft: 15,
     marginRight: 49
   },
   event: {

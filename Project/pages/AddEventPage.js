@@ -16,14 +16,15 @@ class AddEventPage extends React.Component {
     tags:"",
     zoomLink:"",
     club: this.props.route.params.club,
+    clubID: this.props.route.params.clubID,
     eventTags:  this.props.route.params.clubTag,   
     select:"",
     logoUrl: this.props.route.params.logo        
   }
 
   async postEvent(state){
-    const url = await "https://bileventsapp.herokuapp.com/viewset/events";
-    console.log(new Date(state.date+"T"+state.time+":00"));
+    const url = await "https://bileventsapp.herokuapp.com/viewset/events/";
+    const evnttime = state.date+"T"+state.time+":00Z";
     const response = await fetch(url, { 
       method: "POST", 
       headers: { 
@@ -31,21 +32,17 @@ class AddEventPage extends React.Component {
         'Content-Type': 'application/json' 
       },
       body: JSON.stringify({ 
-        "event_name": state.name,
-        "event_place":state.place,
-        "event_time":new Date(state.date+"T"+state.time+":00"),
-        "event_points":state.GEPoint,
-        "event_max_capacity":state.maxCapacity,
-        "event_tags": state.eventTags,
-        "event_description":" ",
-        "club": state.club,
-        "event_zoom_link":state.zoomLink,
+        event_name: state.name,
+        event_place:state.place,
+        event_time:evnttime,
+        event_points:state.GEPoint,
+        event_max_capacity:state.maxCapacity,
+        event_tags: state.eventTags,
+        event_description:"test",
+        club: state.club,
+        event_zoom_link:state.zoomLink,
       }) 
     });
-    if(response.status == 200)
-      console.log("eklendi");
-    else
-      console.log(response.status);
   }
 
   render(){  
@@ -73,7 +70,7 @@ class AddEventPage extends React.Component {
               format="YYYY-MM-DD"
               minDate={now}
               maxDate="2021-06-01"
-              placeholder="Select date"
+              placeholder="Select Date"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"              
               customStyles={{
@@ -118,7 +115,7 @@ class AddEventPage extends React.Component {
           </View>
           
         </View>
-        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} logo={this.props.route.params.logo}></Footer>
+        <Footer bilkent_id={this.props.route.params.userID} club={this.props.route.params.club} clubTag = {this.props.route.params.clubTag} clubID = {this.props.route.params.clubID} logo={this.props.route.params.logo}></Footer>
       </View>
     );
   }
