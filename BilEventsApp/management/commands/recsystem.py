@@ -14,7 +14,7 @@ from sklearn.preprocessing import MultiLabelBinarizer
 class Command(BaseCommand):
 
     help = 'Execute the recommender engine.'  
-    
+
     def one_hot_encoding(self, description):
         tags = description.split()
         categories_dict = {"FUN":0.0, "EDU":1.0, "SCI":2.0, "ART":3.0, "IKT":4.0, "HUM":5.0, "BUSS":6.0, "LAW":7.0, "ENGR":8.0, "MUS":9.0, "APS":10.0}
@@ -94,8 +94,8 @@ class Command(BaseCommand):
             ypred[i] += offset
         content_test_y = {'rating': ypred}
         df_pred_y = pd.DataFrame(content_test_y)
-        pd.concat([df_test_x, df_pred_y])
-        print(df_test_x)
+        df_test_x['rating'] = ypred
+        return df_test_x
     
     def get_top_n(self, predictions, n=10):
         # First map the predictions to each user.
@@ -138,7 +138,7 @@ class Command(BaseCommand):
         data_train = Dataset.load_from_df(df_train[['userID', 'itemID', 'rating']], reader)
         data_test = Dataset.load_from_df(df_test[['userID', 'itemID', 'rating']], reader)
         
-        kf = KFold(n_splits=2)
+        kf = KFold(n_splits=3)
         algo = SVD()
 
         for trainset, validset in kf.split(data_train):
