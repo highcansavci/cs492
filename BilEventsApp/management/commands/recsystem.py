@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from BilEventsApp.models import Club, Event, RecommendedEvent, Participant, Rate
 from surprise.model_selection import KFold
 from collections import defaultdict
-from sklearn.preprocessing import MultiLabelBinarizer
+from collections import Counter
 from django.utils import timezone
 
 
@@ -81,15 +81,20 @@ class Command(BaseCommand):
         df_train_y = pd.DataFrame(content_train_y)
         df_test_y = pd.DataFrame(content_test_y)
         df_test_items = pd.DataFrame(content_test_items)
-        return df_train_x, df_train_y, df_test_x, df_test_y, df_test_items
+        return df_train_x, df_train_y, df_test_x, df_test_y, df_test_items, content_train_y
 
     def content_based(self):
-        df_train_x, df_train_y, df_test_x, df_test_y, df_test_items = self.create_cb_dataset()
+        df_train_x, df_train_y, df_test_x, df_test_y, df_test_items, content_train_y = self.create_cb_dataset()
+        sorted_content = sorted(list(Counter(content_train_y['rating']).keys()))
+        content_train_y['rating'] = [sorted_content.index(ele) for ele in content_train_y['rating']]
+        df_train_y = pd.DataFrame(content_train_y)
         dtrain = xgb.DMatrix(df_train_x, label=df_train_y, enable_categorical=True) 
         dtest = xgb.DMatrix(df_test_x, enable_categorical=True) 
-        xg_cls = xgb.XGBClassifier(max_depth=9, objective='multi:softmax', n_estimators=1000, eval_metric="mlogloss", use_label_encoder=True)
+        xg_cls = xgb.XGBClassifier(max_depth=9, objective='multi:softmax', n_estimators=1000, eval_metric="mlogloss", use_label_encoder=False)
         xg_cls.fit(df_train_x, df_train_y['rating'])
         ypred = xg_cls.predict(df_test_x)
+        for i in range(ypred.shape[0]):
+            ypred[i] = sorted_content[ypred[i]]
         content_test_y = {'rating': ypred}
         df_pred_y = pd.DataFrame(content_test_y)
         df_test_x['rating'] = ypred
