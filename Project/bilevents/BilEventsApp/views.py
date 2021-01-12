@@ -1,248 +1,278 @@
-from django.contrib.auth.models import User 
-from .models import Club, Event, RecommendedEvent, ClubLeader
-from .serializers import CurrentUserSerializer, ClubSerializer, ClubLeaderSerializer, EventSerializer, RecommendedEventSerializer
+from .models import Club, Event, RecommendedEvent, Participant, Rate
+from .serializers import CurrentParticipantSerializer, ClubSerializer, EventSerializer, RecommendedEventSerializer, RecommendedEventMainSerializer, ClubMemberSerializer, ClubMainSerializer, EventMainSerializer, EventParticipantSerializer, RecommendedEventUserSerializer, RateSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import permission_classes
+from rest_framework.views import APIView
+from django.core.exceptions import SuspiciousOperation, ObjectDoesNotExist
+from django.utils import timezone
+from django.core.management import call_command
+from io import StringIO
 
 # Create your views here.
 
-class SelfOrAdmin(BasePermission):
 
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj == request.user or request.user.is_admin
+class ParticipantViewSet(viewsets.ModelViewSet):
+    queryset = Participant.objects.all()
+    serializer_class = CurrentParticipantSerializer
+    #permission_classes = [IsAuthenticated | IsAdminUser]
+    lookup_field = 'bilkent_id'
 
-
-class LeaderOrAdmin(BasePermission):
-    def has_permission(self, request, view):
-        return request.user in ClubLeader.objects.all()
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user == obj.club_leader or request.user.is_admin
-
-class EventLeaderOrAdmin(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user == obj.club.club_leader or request.user.is_admin
+    def perform_update(self, serializer):
+        serializer.save()
 
 
-class UserViewSet(viewsets.ViewSet):
+class LoginView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    @staticmethod
+    def get(request):
+        if str(request.GET['bilkent_id']).isdigit() and len(str(request.GET['bilkent_id'])) == 8:
+            user = get_object_or_404(Participant, bilkent_id=request.GET['bilkent_id'])
+            if user.password == request.GET['password']:
+                serializer = CurrentParticipantSerializer(user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def list(self, request):
-        users = User.objects.all().exclude(is_superuser=True)
-        serializer = CurrentUserSerializer(users, many=True)
-        return Response(serializer.data)
-
-    @permission_classes([IsAdminUser])
-    def create(self, request):
-        print(request.data["email"])
-        serializer = CurrentUserSerializer(data=request.data)
-        print(request.data['email'])
-        if serializer.is_valid() and CurrentUserSerializer.validate_email(request.data['email']):
+class RegisterView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    @staticmethod
+    def post(request):
+        serializer = CurrentParticipantSerializer(data=request.data)
+        if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def retrieve(self, request, pk=None):
-        queryset = User.objects.all().exclude(is_superuser=True)
-        participant = get_object_or_404(queryset, pk=pk)
-        serializer = CurrentUserSerializer(participant, {'password': participant.password})
-        if serializer.is_valid():
+class ClubViewSet(viewsets.ModelViewSet):
+    queryset = Club.objects.all()
+    serializer_class = ClubMainSerializer
+    lookup_field = 'club_name'
+
+class ClubMembersView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    @staticmethod
+    def get(request):
+        club = get_object_or_404(Club, club_name=request.GET['club_name'])
+        serializer = ClubMemberSerializer(club)
+        return Response(serializer.data)
+
+
+class ClubLeaderView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    def get(self, request, pk):
+        try:
+            leader = get_object_or_404(Participant, bilkent_id=pk)
+            club = leader.club
+            serializer = ClubMainSerializer(club)
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
+        except ObjectDoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-    @permission_classes([SelfOrAdmin])
-    def update(self, request, pk=None):
-        participant = User.objects.get(pk=pk)
-        serializer = CurrentUserSerializer(participant, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class EventViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventMainSerializer
+    lookup_field = 'event_name'
 
-    @permission_classes([SelfOrAdmin])
-    def partial_update(self, request, pk=None):
-        participant = User.objects.get(pk=pk)
-        serializer = CurrentUserSerializer(participant, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        if type(request.data['club']) is int:
+            club = get_object_or_404(Club, id=request.data['club'])
+        elif type(request.data['club']) is str and request.data['club'].isalpha():
+            club = get_object_or_404(Club, club_name=request.data['club'])
+        elif type(request.data['club']) is str and request.data['club'].isnumeric():
+            club = get_object_or_404(Club, id=request.data['club'])
+        request.data._mutable = True
+        request.data['club'] = club.id 
+        response = super().create(request, *args, **kwargs)
+        instance = response.data
+        return Response({'status': 'success', 'club name': instance['club']})
+    
 
-    @permission_classes([SelfOrAdmin])
-    def destroy(self, request, pk=None):
-        participant = User.objects.get(pk=pk)
-        participant.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+class PastEventsViewSet(viewsets.ModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventMainSerializer
+    lookup_field = 'event_name'
+    def get_queryset(self):
+        queryset = self.queryset
+        query_set = queryset.filter(event_time__lt=timezone.now())
+        return query_set
 
-class ClubLeaderViewSet(viewsets.ViewSet):
 
-    @permission_classes([IsAdminUser])
-    def list(self, request):
-        leaders = ClubLeader.objects.all().exclude(is_superuser=True)
-        serializer = ClubLeaderSerializer(leaders, many=True)
+class EventParticipantsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+
+    def get(self, request):
+        event = get_object_or_404(Event, event_name=request.GET['event_name'])
+        serializer = EventParticipantSerializer(event)
         return Response(serializer.data)
 
-    @permission_classes([IsAdminUser])
-    def create(self, request):
-        serializer = ClubLeaderSerializer(data=request.data)
-        if serializer.is_valid():
+    def post(self, request):
+        participant_list = []
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if type(request.data['participants']) == int:
+            participant_list.append(request.data['participants'])
+        elif type(request.data['participants']) == list:
+            participant_list.extend(request.data['participants'])
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes([SelfOrAdmin])
-    def retrieve(self, request, pk=None):
-        queryset = ClubLeader.objects.all().exclude(is_superuser=True)
-        leader = get_object_or_404(queryset, pk)
-        serializer = ClubLeaderSerializer(leader)
+    def put(self, request):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        participant_list = [participant.bilkent_id for participant in event.participants.all()]
+        if type(request.data['participants']) == int:
+            participant_list.append(request.data['participants'])
+        elif type(request.data['participants']) == list:
+            participant_list.extend(request.data['participants'])
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if event.event_time < timezone.now():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        if type(request.data['participants']) == int:
+            participant_list = [participant.bilkent_id for participant in event.participants.all() if request.data['participants'] != participant.bilkent_id]
+        elif type(request.data['participants']) == list:
+            participant_list = [participant.bilkent_id for participant in event.participants.all() if not(participant.bilkent_id  in request.data['participants'])]
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SelectedEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        selected_events = participant.eventinfo_set.all()
+        serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
-
-    @permission_classes([SelfOrAdmin])
-    def update(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        serializer = ClubLeaderSerializer(leader, data=request.data)
-        if serializer.is_valid():
+    
+    def post(self, request, pk):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        participant_list = []
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        participant_list.append(participant)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes([SelfOrAdmin])
-    def partial_update(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        serializer = ClubLeaderSerializer(leader, data=request.data, partial=True)
-        if serializer.is_valid():
+    def put(self, request, pk):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        participant_list = [participant.bilkent_id for participant in event.participants.all()]
+        participant = int(pk)
+        if not(participant in participant_list):
+            participant_list.append(participant)
+        else:
+            return Response(status=status.HTTP_409_CONFLICT)
+        print(participant_list)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, pk):
+        event = get_object_or_404(Event, event_name=request.data['event_name'])
+        participant_list = [participant.bilkent_id for participant in event.participants.all()]
+        participant = int(pk)
+        if participant in participant_list:
+            participant_list.remove(participant)
+        else:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        event.participants.set(participant_list) 
+        serializer = EventParticipantSerializer(event, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
-    @permission_classes([SelfOrAdmin])
-    def destroy(self, request, pk=None):
-        leader = ClubLeader.objects.get(pk=pk)
-        leader.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class ClubViewSet(viewsets.ViewSet):
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def list(self, request):
-        clubs = Club.objects.all()
-        serializer = ClubSerializer(clubs, many=True)
+class SelectedPastEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        selected_events = participant.eventinfo_set.filter(event_time__lt=timezone.now())
+        serializer = EventMainSerializer(selected_events, many=True)
         return Response(serializer.data)
+    
 
-    @permission_classes([IsAdminUser])
-    def create(self, request):
-        serializer = ClubSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def retrieve(self, request, pk=None):
-        queryset = Club.objects.all()
-        club = get_object_or_404(queryset, pk)
-        serializer = ClubSerializer(club)
+class RateEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        rate_events = Rate.objects.filter(participant=participant)
+        serializer = RateSerializer(rate_events, many=True)
         return Response(serializer.data)
+    
+    
+    def put(self, request, pk):
+        participant = get_object_or_404(Participant, bilkent_id=pk)
+        selected_event = get_object_or_404(Event, event_name=request.data['event_name'])
+        if selected_event.event_time < timezone.now():
+            rate_events = Rate.objects.get(participant=participant, event=selected_event)
+            if rate_events.event_score == 0:
+                rate_events.event_score = request.data['event_score']
+                serializer = RateSerializer(rate_events, data=request.data, partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    raters = Rate.objects.filter(event=selected_event, event_score__gt=0).count()
+                    temp = (selected_event.event_avg_score * raters + request.data['event_score']) / (raters + 1)
+                    Event.objects.filter(event_name=selected_event.event_name).update(event_avg_score=temp)
+                    return Response(serializer.data)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
 
-    @permission_classes([LeaderOrAdmin])
-    def update(self, request, pk=None):
-        club = Club.objects.get(pk=pk)
-        serializer = ClubSerializer(leader, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @permission_classes([LeaderOrAdmin])
-    def partial_update(self, request, pk=None):
-        club = Club.objects.get(pk=pk)
-        serializer = ClubSerializer(leader, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([LeaderOrAdmin])
-    def destroy(self, request, pk=None):
-        club = Club.objects.get(pk=pk)
-        club.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class EventViewSet(viewsets.ViewSet):
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def list(self, request):
-        events = Event.objects.all()
-        serializer = EventSerializer(events, many=True)
+class RecommendedEventsView(APIView):
+    authentication_classes = ()
+    permission_classes = ()
+    
+    def get(self, request, pk):
+        user = get_object_or_404(Participant, bilkent_id=pk)
+        out = StringIO()
+        call_command('recsystem', stdout=out)
+        value = out.getvalue()
+        items = value.split(",")[:-1]
+        event_names = []
+        for i in range(0, len(items), 2):
+            if int(items[i]) == user.bilkent_id:
+                event_names.append(items[i + 1])
+        events = Event.objects.filter(event_name__in=event_names) 
+        serializer = EventMainSerializer(events, many=True)
         return Response(serializer.data)
-
-    @permission_classes([EventLeaderOrAdmin])
-    def create(self, request):
-        self.check_object_permissions(self.request, request.data)
-        serializer = ClubSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def retrieve(self, request, pk=None):
-        queryset = Event.objects.all()
-        event = get_object_or_404(queryset, pk)
-        serializer = EventSerializer(event)
-        return Response(serializer.data)
-
-    @permission_classes([EventLeaderOrAdmin])
-    def update(self, request, pk=None):
-        event = Event.objects.get(pk=pk)
-        serializer = EventSerializer(event, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([EventLeaderOrAdmin])
-    def partial_update(self, request, pk=None):
-        event = Event.objects.get(pk=pk)
-        serializer = EventSerializer(event, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @permission_classes([EventLeaderOrAdmin])
-    def destroy(self, request, pk=None):
-        event = Event.objects.get(pk=pk)
-        event.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-class RecommendedEventViewSet(viewsets.ViewSet):
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def list(self, request):
-        recevents = RecommendedEvent.objects.all()
-        serializer = RecommendedEventSerializer(recevents, many=True)
-        return Response(serializer.data)
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def retrieve(self, request, pk=None):
-        queryset = RecommendedEvent.objects.all()
-        recevent = get_object_or_404(queryset, pk)
-        serializer = EventSerializer(recevent)
-        return Response(serializer.data)
-
-    @permission_classes([IsAuthenticated | IsAdminUser])
-    def destroy(self, request, pk=None):
-        recevent = ReconmmendedEvent.objects.get(pk=pk)
-        recevent.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
